@@ -2,7 +2,6 @@ import { useState } from 'react'
 import './App.css'
 import ActionPanel from './features/editor/ActionPanel'
 import MainPanel from './features/editor/MainPanel'
-import OptionsBar from './features/editor/OptionsBar'
 import ProjectPanel from './features/editor/ProjectPanel'
 
 function App() {
@@ -12,7 +11,6 @@ function App() {
 
   return (
     <>
-      <OptionsBar/>
       <div className="panels">
         <ProjectPanel/>
         <MainPanel size={size} color={color} tool={tool}/>
