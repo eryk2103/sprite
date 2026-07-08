@@ -1,0 +1,17 @@
+.options-bar{
+    display: flex;
+    justify-content: space-between;
+    padding: .5em;
+    border-bottom: solid 1px black;
+}
+
+.logo {
+    font-family: "Bitcount Prop Single", system-ui;
+    font-size: 2rem;
+}
+
+.size-selector__wrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}

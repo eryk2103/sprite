@@ -1,0 +1,31 @@
+.main-panel {
+    flex-grow: 1;
+    padding: .5em;
+    position: relative;
+}
+
+.sprite {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4rem;
+}
+
+.sprite__header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.sprite__canvas {
+    display: flex;
+    flex-direction: column;
+}
+
+.sprite__size {
+    text-align: center;
+    margin-top: .5rem;
+}
+
+#canvas {
+    border: solid 1px black;
+}

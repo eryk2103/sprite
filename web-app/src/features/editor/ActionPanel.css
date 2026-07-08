@@ -1,0 +1,13 @@
+.action-panel{
+    border-left: solid 1px black;
+    padding: .5em;
+    min-width: 15%;
+}
+
+.section {
+    margin-bottom: 1rem;
+}
+
+.section__title {
+    margin-bottom: .3rem;
+}

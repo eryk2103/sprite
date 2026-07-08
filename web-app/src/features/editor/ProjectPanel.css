@@ -1,0 +1,7 @@
+.project-panel {
+    padding: .5em;
+    border-right: solid 1px black;
+    min-width: 15%;
+    display: flex;
+    flex-direction: column;
+}
