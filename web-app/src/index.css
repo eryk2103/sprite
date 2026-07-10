@@ -142,6 +142,17 @@ h4 {
   padding-top: 0.5rem;
 }
 
+.form__row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.form__row .form__field {
+  flex: 1;
+}
+
 .form-wrapper {
   min-width: 600px;
 }

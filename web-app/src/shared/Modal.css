@@ -10,7 +10,7 @@
 
 .modal {
     background: #fff;
-    min-width: 340px;
+    min-width: 600px;
     max-width: 90vw;
     max-height: 85vh;
     display: flex;
