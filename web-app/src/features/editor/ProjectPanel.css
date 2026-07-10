@@ -19,3 +19,14 @@
     justify-content: space-between;
     gap: 0.5rem;
 }
+
+.group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.sprite-list {
+    padding-left: 1rem;
+}

@@ -1,8 +1,7 @@
 namespace WebAPI.Models;
 
-public class GroupDto
+public class SpriteDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
-    public required List<SpriteDto> Sprites { get; set; }
 }

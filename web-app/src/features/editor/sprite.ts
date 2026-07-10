@@ -3,3 +3,8 @@ export type Sprite = {
     name: string;
     data: string;
 }
+
+export type SpriteSummary = {
+    id: number;
+    name: string;
+}

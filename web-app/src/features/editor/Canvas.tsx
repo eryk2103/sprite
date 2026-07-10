@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
 import './Canvas.css';
 
 const CANVAS_SIZE = 600;
@@ -7,12 +7,34 @@ interface CanvasProps {
     size: number;
     color: string;
     tool: string;
+    data?: string;
 }
 
-export default function Canvas({ size, color, tool }: CanvasProps) {
+export interface CanvasHandle {
+    getData: () => string;
+}
+
+function parsePixels(data: string | undefined, size: number): string[][] | null {
+    if (!data) return null;
+    try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length === size && parsed.every(row => Array.isArray(row) && row.length === size)) {
+            return parsed;
+        }
+    } catch {
+        return null;
+    }
+    return null;
+}
+
+const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, color, tool, data }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const pixels = useRef<string[][]>([]);
     const isDrawing = useRef(false);
+
+    useImperativeHandle(ref, () => ({
+        getData: () => JSON.stringify(pixels.current),
+    }));
 
     const drawCanvas = useCallback(() => {
         const canvas = canvasRef.current;
@@ -47,9 +69,9 @@ export default function Canvas({ size, color, tool }: CanvasProps) {
     }, [size]);
 
     useEffect(() => {
-        pixels.current = Array.from({ length: size }, () => Array(size).fill(''));
+        pixels.current = parsePixels(data, size) ?? Array.from({ length: size }, () => Array(size).fill(''));
         drawCanvas();
-    }, [size, drawCanvas]);
+    }, [size, data, drawCanvas]);
 
     const getCell = useCallback((e: React.MouseEvent<HTMLCanvasElement>): [number, number] => {
         const canvas = canvasRef.current!;
@@ -109,4 +131,6 @@ export default function Canvas({ size, color, tool }: CanvasProps) {
             <span className="sprite__size label">{size} x {size}</span>
         </div>
     );
-}
+});
+
+export default Canvas;

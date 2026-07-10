@@ -44,6 +44,6 @@ public class GroupController(AppDbContext context): ControllerBase
         context.Add(newGroup);
         await context.SaveChangesAsync();
 
-        return Ok(new GroupDto { Id = newGroup.Id, Name = newGroup.Name });
+        return Ok(new GroupDto { Id = newGroup.Id, Name = newGroup.Name, Sprites = [] });
     }
 }

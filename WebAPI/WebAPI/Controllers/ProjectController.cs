@@ -51,7 +51,12 @@ public class ProjectController(AppDbContext context): ControllerBase
                 Groups = p.Groups.Select(g => new GroupDto
                 {
                     Id = g.Id,
-                    Name = g.Name
+                    Name = g.Name,
+                    Sprites = g.Sprites.Select(s => new SpriteDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name
+                    }).ToList()
                 }).ToList()
             })
             .FirstOrDefaultAsync();

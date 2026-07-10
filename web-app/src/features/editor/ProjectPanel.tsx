@@ -6,17 +6,22 @@ import CreateGroupModal from './CreateGroupModal';
 import './ProjectPanel.css';
 import type { Project, ProjectDetail } from './project';
 import type { Group } from './group';
+import type { Sprite, SpriteSummary } from './sprite';
 
 type Props = {
     project: ProjectDetail|null;
     onProjectChange: (project: ProjectDetail) => void;
+    onSpriteSelect: (sprite: Sprite) => void;
 }
-export default function ProjectPanel({project, onProjectChange}: Props) {
+export default function ProjectPanel({project, onProjectChange, onSpriteSelect}: Props) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [selectOpen, setSelectOpen] = useState(false);
     const [createGroupOpen, setCreateGroupOpen] = useState(false);
     const [loadError, setLoadError] = useState('');
+    const [creatingSpriteGroupId, setCreatingSpriteGroupId] = useState<number | null>(null);
+    const [spriteError, setSpriteError] = useState('');
+    const [openingSpriteId, setOpeningSpriteId] = useState<number | null>(null);
 
     const handleOpenProject = () => {
         if (!user) {
@@ -30,6 +35,57 @@ export default function ProjectPanel({project, onProjectChange}: Props) {
         if (!project) return;
         onProjectChange({ ...project, groups: [...project.groups, group] });
         setCreateGroupOpen(false);
+    };
+
+    const handleAddSprite = async (group: Group) => {
+        if (!project) return;
+
+        setSpriteError('');
+        setCreatingSpriteGroupId(group.id);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ groupId: group.id, name: 'sprite_01', data: '{}' }),
+            });
+
+            if (!res.ok) throw new Error('Failed to create sprite');
+
+            const sprite: SpriteSummary = await res.json();
+            onProjectChange({
+                ...project,
+                groups: project.groups.map(g =>
+                    g.id === group.id ? { ...g, sprites: [...g.sprites, sprite] } : g
+                ),
+            });
+        } catch {
+            setSpriteError('Failed to create sprite');
+        } finally {
+            setCreatingSpriteGroupId(null);
+        }
+    };
+
+    const handleSpriteClick = async (sprite: SpriteSummary) => {
+        setSpriteError('');
+        setOpeningSpriteId(sprite.id);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites/${sprite.id}`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (!res.ok) throw new Error('Failed to load sprite');
+
+            const detail: Sprite = await res.json();
+            onSpriteSelect(detail);
+        } catch {
+            setSpriteError('Failed to load sprite');
+        } finally {
+            setOpeningSpriteId(null);
+        }
     };
 
     const handleSelect = async (selected: Project) => {
@@ -73,7 +129,34 @@ export default function ProjectPanel({project, onProjectChange}: Props) {
                     :
                     <ul className="project-list">
                         {project.groups.map(group => (
-                            <li key={group.id}>{group.name}</li>
+                            <li key={group.id}>
+                                <div className="group-item">
+                                    <span>{group.name}</span>
+                                    <button
+                                        className="btn"
+                                        onClick={() => handleAddSprite(group)}
+                                        disabled={creatingSpriteGroupId === group.id}
+                                    >
+                                        {creatingSpriteGroupId === group.id ? 'Adding…' : 'Add sprite'}
+                                    </button>
+                                </div>
+                                {group.sprites.length > 0 && (
+                                    <ul className="sprite-list">
+                                        {group.sprites.map(sprite => (
+                                            <li key={sprite.id}>
+                                                <button
+                                                    type="button"
+                                                    className="btn sprite-list__item"
+                                                    onClick={() => handleSpriteClick(sprite)}
+                                                    disabled={openingSpriteId === sprite.id}
+                                                >
+                                                    {sprite.name}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
                         ))}
                     </ul>
                     }
@@ -84,6 +167,7 @@ export default function ProjectPanel({project, onProjectChange}: Props) {
             }
 
             {loadError && <span className="form__error">{loadError}</span>}
+            {spriteError && <span className="form__error">{spriteError}</span>}
 
             <ProjectSelectModal
                 isOpen={selectOpen}
