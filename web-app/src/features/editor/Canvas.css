@@ -1,0 +1,13 @@
+.sprite__canvas {
+    display: flex;
+    flex-direction: column;
+}
+
+.sprite__size {
+    text-align: center;
+    margin-top: .5rem;
+}
+
+#canvas {
+    border: solid 1px black;
+}
