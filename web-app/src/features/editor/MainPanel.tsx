@@ -60,7 +60,7 @@ export default function MainPanel({ size, color, tool, sprite }: MainPanelProps)
                     </div>
                     {saveError && <span className="form__error">{saveError}</span>}
                     <div className="sprite">
-                        <Canvas ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} />
+                        <Canvas key={sprite.id} ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} />
                     </div>
                 </>
             ) : (

@@ -48,6 +48,7 @@ export default function ProjectPanel({ project, onProjectChange, onSpriteSelect,
             ),
         });
         setCreateSpriteGroupId(null);
+        onSpriteSelect({ ...sprite, data: '{}' });
     };
 
     const handleSpriteClick = async (sprite: SpriteSummary) => {
