@@ -82,16 +82,22 @@ export default function MainPanel({ size, color, tool, sprite, onSpriteChange }:
 
     return (
         <div className="main-panel">
-            <div className='sprite__header'>
-                <span className="label sprite__name">{sprite?.name ?? 'sprite_01'}</span>
-                <button className='btn btn--primary' onClick={handleSave} disabled={saving}>
-                    {saving ? 'Saving…' : 'Save'}
-                </button>
-            </div>
-            {saveError && <span className="form__error">{saveError}</span>}
-            <div className="sprite">
-                <Canvas ref={canvasRef} size={size} color={color} tool={tool} data={sprite?.data} />
-            </div>
+            {sprite ? (
+                <>
+                    <div className='sprite__header'>
+                        <span className="label sprite__name">{sprite.name}</span>
+                        <button className='btn btn--primary' onClick={handleSave} disabled={saving}>
+                            {saving ? 'Saving…' : 'Save'}
+                        </button>
+                    </div>
+                    {saveError && <span className="form__error">{saveError}</span>}
+                    <div className="sprite">
+                        <Canvas ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} />
+                    </div>
+                </>
+            ) : (
+                <span className="placeholder">Select a sprite to start editing</span>
+            )}
 
             <SaveSpriteModal
                 isOpen={saveAsOpen}
