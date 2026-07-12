@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../auth/authStore';
 import Canvas, { type CanvasHandle } from './Canvas';
-import SaveSpriteModal from './SaveSpriteModal';
 import './MainPanel.css';
 import type { Sprite } from './sprite';
 
@@ -11,16 +10,14 @@ interface MainPanelProps {
     color: string;
     tool: string;
     sprite: Sprite | null;
-    onSpriteChange: (sprite: Sprite) => void;
 }
 
-export default function MainPanel({ size, color, tool, sprite, onSpriteChange }: MainPanelProps) {
+export default function MainPanel({ size, color, tool, sprite }: MainPanelProps) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const canvasRef = useRef<CanvasHandle>(null);
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
-    const [saveAsOpen, setSaveAsOpen] = useState(false);
 
     const handleSave = async () => {
         if (!user) {
@@ -28,10 +25,7 @@ export default function MainPanel({ size, color, tool, sprite, onSpriteChange }:
             return;
         }
 
-        if (!sprite) {
-            setSaveAsOpen(true);
-            return;
-        }
+        if (!sprite) return;
 
         setSaving(true);
         setSaveError('');
@@ -47,32 +41,6 @@ export default function MainPanel({ size, color, tool, sprite, onSpriteChange }:
             });
 
             if (!res.ok) throw new Error('Failed to save sprite');
-        } catch {
-            setSaveError('Failed to save sprite');
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleCreateSprite = async (groupId: number, name: string) => {
-        setSaving(true);
-        setSaveError('');
-
-        try {
-            const data = canvasRef.current?.getData() ?? '';
-
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ groupId, name, data }),
-            });
-
-            if (!res.ok) throw new Error('Failed to save sprite');
-
-            const created = await res.json();
-            onSpriteChange({ id: created.id, name: created.name, data });
-            setSaveAsOpen(false);
         } catch {
             setSaveError('Failed to save sprite');
         } finally {
@@ -98,12 +66,6 @@ export default function MainPanel({ size, color, tool, sprite, onSpriteChange }:
             ) : (
                 <span className="placeholder">Select a sprite to start editing</span>
             )}
-
-            <SaveSpriteModal
-                isOpen={saveAsOpen}
-                onClose={() => setSaveAsOpen(false)}
-                onSubmit={handleCreateSprite}
-            />
         </div>
     );
 }
