@@ -54,7 +54,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
             }
         }
 
-        ctx.strokeStyle = '#d0d0d0';
+        ctx.strokeStyle = '#000000';
         ctx.lineWidth = 0.5;
         for (let i = 0; i <= size; i++) {
             ctx.beginPath();

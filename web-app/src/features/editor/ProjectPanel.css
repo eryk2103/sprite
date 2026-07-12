@@ -1,6 +1,6 @@
 .project-panel {
     padding: .5em;
-    border-right: solid 1px black;
+    border-right: solid 1px #e0dcd2;
     min-width: 15%;
     display: flex;
     flex-direction: column;

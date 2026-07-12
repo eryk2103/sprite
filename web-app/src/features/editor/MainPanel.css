@@ -2,6 +2,7 @@
     flex-grow: 1;
     padding: .5em;
     position: relative;
+    background: radial-gradient(circle at 50% 42%, #ffffff 0%, #e6e3db 78%);
 }
 
 .sprite {

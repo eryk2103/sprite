@@ -6,7 +6,7 @@
 
 .app-header {
     padding: .5em;
-    border-bottom: solid 1px black;
+    border-bottom: solid 1px #e0dcd2;
     display: flex;
 }
 
