@@ -20,13 +20,35 @@
     gap: 0.5rem;
 }
 
-.group-item {
+.group__items {
+    padding-left: 1em;
+}
+
+.group-list__wrapper {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
+    flex-direction: column;
+    padding-left: 1em;
+}
+
+.group-list__item {
+    margin-bottom: 0.75rem;
 }
 
 .sprite-list {
-    padding-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+
+.sprite-list__item {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.project-panel__change-btn {
+    margin-top: auto;
+    align-self: flex-end;
 }

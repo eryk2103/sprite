@@ -3,23 +3,25 @@ import { useNavigate } from 'react-router';
 import { useAuth } from '../auth/authStore';
 import ProjectSelectModal from './ProjectSelectModal';
 import CreateGroupModal from './CreateGroupModal';
+import CreateSpriteModal from './CreateSpriteModal';
 import './ProjectPanel.css';
 import type { Project, ProjectDetail } from './project';
 import type { Group } from './group';
 import type { Sprite, SpriteSummary } from './sprite';
 
 type Props = {
-    project: ProjectDetail|null;
+    project: ProjectDetail | null;
     onProjectChange: (project: ProjectDetail) => void;
     onSpriteSelect: (sprite: Sprite) => void;
+    selectedSpriteId?: number | null;
 }
-export default function ProjectPanel({project, onProjectChange, onSpriteSelect}: Props) {
+export default function ProjectPanel({ project, onProjectChange, onSpriteSelect, selectedSpriteId = null }: Props) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [selectOpen, setSelectOpen] = useState(false);
     const [createGroupOpen, setCreateGroupOpen] = useState(false);
     const [loadError, setLoadError] = useState('');
-    const [creatingSpriteGroupId, setCreatingSpriteGroupId] = useState<number | null>(null);
+    const [createSpriteGroupId, setCreateSpriteGroupId] = useState<number | null>(null);
     const [spriteError, setSpriteError] = useState('');
     const [openingSpriteId, setOpeningSpriteId] = useState<number | null>(null);
 
@@ -37,37 +39,20 @@ export default function ProjectPanel({project, onProjectChange, onSpriteSelect}:
         setCreateGroupOpen(false);
     };
 
-    const handleAddSprite = async (group: Group) => {
+    const handleSpriteCreate = (groupId: number, sprite: SpriteSummary) => {
         if (!project) return;
-
-        setSpriteError('');
-        setCreatingSpriteGroupId(group.id);
-
-        try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ groupId: group.id, name: 'sprite_01', data: '{}' }),
-            });
-
-            if (!res.ok) throw new Error('Failed to create sprite');
-
-            const sprite: SpriteSummary = await res.json();
-            onProjectChange({
-                ...project,
-                groups: project.groups.map(g =>
-                    g.id === group.id ? { ...g, sprites: [...g.sprites, sprite] } : g
-                ),
-            });
-        } catch {
-            setSpriteError('Failed to create sprite');
-        } finally {
-            setCreatingSpriteGroupId(null);
-        }
+        onProjectChange({
+            ...project,
+            groups: project.groups.map(g =>
+                g.id === groupId ? { ...g, sprites: [...g.sprites, sprite] } : g
+            ),
+        });
+        setCreateSpriteGroupId(null);
     };
 
     const handleSpriteClick = async (sprite: SpriteSummary) => {
+        if (openingSpriteId !== null) return;
+
         setSpriteError('');
         setOpeningSpriteId(sprite.id);
 
@@ -107,63 +92,61 @@ export default function ProjectPanel({project, onProjectChange, onSpriteSelect}:
         }
     };
 
-    return(
+    return (
         <div className="project-panel">
             <h4 className="label">Project</h4>
             {project === null ?
-            <div className="project__empty">
-                <span className='placeholder'>
-                    No project selected
-                </span>
-                <button className="btn btn--primary" onClick={handleOpenProject}>Open project</button>
-            </div>
-            :
-            <>
-                <div>
-                    <div className="project__name-row">
-                        <h3>{project.name}</h3>
-                        <button className="btn btn--icon" onClick={() => setCreateGroupOpen(true)}>+</button>
-                    </div>
-                    {project.groups.length === 0 ?
-                    <span className="placeholder">No groups</span>
-                    :
-                    <ul className="project-list">
-                        {project.groups.map(group => (
-                            <li key={group.id}>
-                                <div className="group-item">
-                                    <span>{group.name}</span>
-                                    <button
-                                        className="btn"
-                                        onClick={() => handleAddSprite(group)}
-                                        disabled={creatingSpriteGroupId === group.id}
-                                    >
-                                        {creatingSpriteGroupId === group.id ? 'Adding…' : 'Add sprite'}
-                                    </button>
-                                </div>
-                                {group.sprites.length > 0 && (
-                                    <ul className="sprite-list">
-                                        {group.sprites.map(sprite => (
-                                            <li key={sprite.id}>
-                                                <button
-                                                    type="button"
-                                                    className="btn sprite-list__item"
-                                                    onClick={() => handleSpriteClick(sprite)}
-                                                    disabled={openingSpriteId === sprite.id}
-                                                >
-                                                    {sprite.name}
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                    }
+                <div className="project__empty">
+                    <span className='placeholder'>
+                        No project selected
+                    </span>
+                    <button className="btn btn--primary" onClick={handleOpenProject}>Open project</button>
                 </div>
-                <button className="btn btn--primary" onClick={handleOpenProject}>Change project</button>
-            </>
-
+                :
+                <>
+                    <div>
+                        <div className="project__name-row">
+                            <span>{project.name}</span>
+                        </div>
+                        <div className='group-list__wrapper'>
+                            <button className=" btn--link" onClick={() => setCreateGroupOpen(true)}>Add group</button>
+                            {project.groups.length === 0 ?
+                                <span className="placeholder">No groups</span>
+                                :
+                                <ul className="group-list">
+                                    {project.groups.map(group => (
+                                        <li key={group.id} className='group-list__item'>
+                                            <div>{group.name}</div>
+                                            <div className='group__items'>
+                                                <button
+                                                    className="btn--link"
+                                                    onClick={() => setCreateSpriteGroupId(group.id)}
+                                                >
+                                                    Add sprite
+                                                </button>
+                                                {group.sprites.length > 0 && (
+                                                    <ul className="sprite-list">
+                                                        {group.sprites.map(sprite => (
+                                                            <li key={sprite.id}>
+                                                                <div
+                                                                    className={`card sprite-list__item${sprite.id === selectedSpriteId ? ' card--selected' : ''}${sprite.id === openingSpriteId ? ' card--loading' : ''}`}
+                                                                    onClick={() => handleSpriteClick(sprite)}
+                                                                >
+                                                                    {sprite.id === openingSpriteId ? 'Loading…' : sprite.name}
+                                                                </div>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                    <button className="btn btn--primary project-panel__change-btn" onClick={handleOpenProject}>Change project</button>
+                </>
             }
 
             {loadError && <span className="form__error">{loadError}</span>}
@@ -181,6 +164,15 @@ export default function ProjectPanel({project, onProjectChange, onSpriteSelect}:
                     onClose={() => setCreateGroupOpen(false)}
                     projectId={project.id}
                     onCreate={handleGroupCreate}
+                />
+            )}
+
+            {createSpriteGroupId !== null && (
+                <CreateSpriteModal
+                    isOpen={createSpriteGroupId !== null}
+                    onClose={() => setCreateSpriteGroupId(null)}
+                    groupId={createSpriteGroupId}
+                    onCreate={sprite => handleSpriteCreate(createSpriteGroupId, sprite)}
                 />
             )}
         </div>

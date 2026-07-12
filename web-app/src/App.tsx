@@ -16,7 +16,7 @@ function App() {
   return (
     <>
       <div className="panels">
-        <ProjectPanel project={project} onProjectChange={setProject} onSpriteSelect={setSprite}/>
+        <ProjectPanel project={project} onProjectChange={setProject} onSpriteSelect={setSprite} selectedSpriteId={sprite?.id ?? null}/>
         <MainPanel size={size} color={color} tool={tool} sprite={sprite} onSpriteChange={setSprite}/>
         <ActionPanel color={color} onColorChange={setColor} tool={tool} onToolChange={setTool} size={size} onSizeChange={setSize}/>
       </div>
