@@ -3,8 +3,8 @@ import './NavBar.css';
 import { useAuth } from '../features/auth/authStore';
 
 export default function Navbar() {
-    const { user } = useAuth();
-    
+    const { user, logout } = useAuth();
+
     return(
         <header className='app-header'>
             <span className='logo'>pixel</span>
@@ -18,7 +18,10 @@ export default function Navbar() {
                     <Link className='btn' to="/register">Register</Link>
                 </>
                 :
-                <span>{user.email}</span>
+                <>
+                    <span>{user.email}</span>
+                    <button className='btn' onClick={logout}>Logout</button>
+                </>
                 }
             </div>
         </header>

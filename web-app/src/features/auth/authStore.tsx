@@ -5,6 +5,7 @@ interface AuthContextValue {
     user: User | null;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<Response>;
+    register: (email: string, password: string) => Promise<Response>;
     logout: () => Promise<void>;
     getMe: () => Promise<void>;
 }
@@ -17,6 +18,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async (email: string, password: string) => {
         return await fetch(`${import.meta.env.VITE_API_URL}/login?useCookies=true`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email, password }),
+        });
+    };
+
+    const register = async (email: string, password: string) => {
+        return await fetch(`${import.meta.env.VITE_API_URL}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -53,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, logout, getMe }}>
+        <AuthContext.Provider value={{ user, isLoading, login, register, logout, getMe }}>
             {children}
         </AuthContext.Provider>
     );
