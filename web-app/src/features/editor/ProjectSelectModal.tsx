@@ -80,10 +80,10 @@ export default function ProjectSelectModal({ isOpen, onClose, onSelect }: Projec
             {!loading && !error && projects.length > 0 && (
                 <ul className="project-list">
                     {projects.map(project => (
-                        <li key={project.id}>
+                        <li key={project.id} className="project-list__row">
                             <button
                                 type="button"
-                                className="btn project-list__item"
+                                className="project-list__item"
                                 onClick={() => onSelect(project)}
                             >
                                 {project.name}
