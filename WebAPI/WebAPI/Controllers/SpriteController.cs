@@ -91,4 +91,50 @@ public class SpriteController(AppDbContext context) : ControllerBase
 
         return Ok(new SpriteDto { Id = sprite.Id, Name = sprite.Name });
     }
+
+    [HttpPut("{id}/rename")]
+    public async Task<ActionResult<SpriteDto>> RenameSprite(int id, RenameSpriteDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        var sprite = await context.Sprites
+            .FirstOrDefaultAsync(s => s.Id == id && s.Group.Project.UserId == userId);
+
+        if (sprite == null)
+        {
+            return NotFound();
+        }
+
+        sprite.Name = dto.Name;
+        await context.SaveChangesAsync();
+
+        return Ok(new SpriteDto { Id = sprite.Id, Name = sprite.Name });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSprite(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        var sprite = await context.Sprites
+            .FirstOrDefaultAsync(s => s.Id == id && s.Group.Project.UserId == userId);
+
+        if (sprite == null)
+        {
+            return NotFound();
+        }
+
+        context.Remove(sprite);
+        await context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

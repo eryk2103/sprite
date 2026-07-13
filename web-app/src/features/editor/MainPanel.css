@@ -15,4 +15,11 @@
 .sprite__header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.sprite__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }

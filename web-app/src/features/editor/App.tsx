@@ -46,11 +46,41 @@ function App() {
     setPendingSprite(null);
   };
 
+  const handleSpriteRename = (renamed: Sprite) => {
+    setSprite(renamed);
+    setProject(prev => prev ? {
+      ...prev,
+      groups: prev.groups.map(g => ({
+        ...g,
+        sprites: g.sprites.map(s => s.id === renamed.id ? { ...s, name: renamed.name } : s),
+      })),
+    } : prev);
+  };
+
+  const handleSpriteDelete = (deletedId: number) => {
+    setSprite(prev => prev?.id === deletedId ? null : prev);
+    setProject(prev => prev ? {
+      ...prev,
+      groups: prev.groups.map(g => ({
+        ...g,
+        sprites: g.sprites.filter(s => s.id !== deletedId),
+      })),
+    } : prev);
+  };
+
   return (
     <>
       <div className="panels">
         <ProjectPanel project={project} onProjectChange={setProject} onSpriteSelect={handleSpriteSelect} selectedSpriteId={sprite?.id ?? null}/>
-        <MainPanel ref={mainPanelRef} size={size} color={color} tool={tool} sprite={sprite}/>
+        <MainPanel
+          ref={mainPanelRef}
+          size={size}
+          color={color}
+          tool={tool}
+          sprite={sprite}
+          onSpriteRename={handleSpriteRename}
+          onSpriteDelete={handleSpriteDelete}
+        />
         <ActionPanel color={color} onColorChange={setColor} tool={tool} onToolChange={setTool} size={size} onSizeChange={setSize}/>
       </div>
       <UnsavedChangesModal
