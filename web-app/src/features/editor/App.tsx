@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react'
 import './App.css'
-import ActionPanel from './features/editor/ActionPanel'
-import MainPanel, { type MainPanelHandle } from './features/editor/MainPanel'
-import ProjectPanel from './features/editor/ProjectPanel'
-import UnsavedChangesModal from './features/editor/UnsavedChangesModal'
-import { type ProjectDetail } from './features/editor/project'
-import { type Sprite } from './features/editor/sprite'
+import ActionPanel from './ActionPanel'
+import MainPanel, { type MainPanelHandle } from './MainPanel'
+import ProjectPanel from './ProjectPanel'
+import UnsavedChangesModal from './UnsavedChangesModal'
+import { type ProjectDetail } from './project'
+import { type Sprite } from './sprite'
 
 function App() {
   const [size, setSize] = useState(16);
