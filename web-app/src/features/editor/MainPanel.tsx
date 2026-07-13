@@ -69,6 +69,18 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
         }
     };
 
+    const handleDownloadPng = async () => {
+        const blob = await canvasRef.current?.toBlob();
+        if (!blob) return;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${sprite?.name ?? 'sprite'}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     const handleDelete = async () => {
         if (!sprite || deleting) return;
 
@@ -106,6 +118,9 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
                         <div className="sprite__actions">
                             <button className='btn btn--primary' onClick={() => save()} disabled={saving}>
                                 {saving ? 'Saving…' : 'Save'}
+                            </button>
+                            <button className='btn' onClick={handleDownloadPng}>
+                                Download PNG
                             </button>
                             <button className='btn' onClick={() => setEditOpen(true)}>
                                 Edit

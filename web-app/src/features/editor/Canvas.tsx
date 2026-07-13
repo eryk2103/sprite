@@ -13,6 +13,7 @@ interface CanvasProps {
 export interface CanvasHandle {
     getData: () => string;
     isDirty: () => boolean;
+    toBlob: () => Promise<Blob | null>;
 }
 
 function parsePixels(data: string | undefined, size: number): string[][] | null {
@@ -37,6 +38,24 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
     useImperativeHandle(ref, () => ({
         getData: () => JSON.stringify(pixels.current),
         isDirty: () => dirty.current,
+        toBlob: () => {
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = size;
+            exportCanvas.height = size;
+            const ctx = exportCanvas.getContext('2d')!;
+
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    const c = pixels.current[row]?.[col];
+                    if (c) {
+                        ctx.fillStyle = c;
+                        ctx.fillRect(col, row, 1, 1);
+                    }
+                }
+            }
+
+            return new Promise<Blob | null>(resolve => exportCanvas.toBlob(resolve, 'image/png'));
+        },
     }));
 
     const drawCanvas = useCallback(() => {
