@@ -8,11 +8,13 @@ interface CanvasProps {
     color: string;
     tool: string;
     data?: string;
+    onDirtyChange?: (dirty: boolean) => void;
 }
 
 export interface CanvasHandle {
     getData: () => string;
     isDirty: () => boolean;
+    markSaved: () => void;
     toBlob: () => Promise<Blob | null>;
 }
 
@@ -29,15 +31,21 @@ function parsePixels(data: string | undefined, size: number): string[][] | null 
     return null;
 }
 
-const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, color, tool, data }, ref) {
+const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, color, tool, data, onDirtyChange }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const pixels = useRef<string[][]>([]);
     const isDrawing = useRef(false);
     const dirty = useRef(false);
 
+    const setDirty = useCallback((value: boolean) => {
+        dirty.current = value;
+        onDirtyChange?.(value);
+    }, [onDirtyChange]);
+
     useImperativeHandle(ref, () => ({
         getData: () => JSON.stringify(pixels.current),
         isDirty: () => dirty.current,
+        markSaved: () => setDirty(false),
         toBlob: () => {
             const exportCanvas = document.createElement('canvas');
             exportCanvas.width = size;
@@ -56,7 +64,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
 
             return new Promise<Blob | null>(resolve => exportCanvas.toBlob(resolve, 'image/png'));
         },
-    }));
+    }), [size, setDirty]);
 
     const drawCanvas = useCallback(() => {
         const canvas = canvasRef.current;
@@ -123,18 +131,18 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
             if (row < 0 || row >= size || col < 0 || col >= size) return;
             pixels.current[row][col] = tool === 'eraser' ? '' : color;
         }
-        dirty.current = true;
+        setDirty(true);
         drawCanvas();
-    }, [color, tool, size, getCell, drawCanvas]);
+    }, [color, tool, size, getCell, drawCanvas, setDirty]);
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!isDrawing.current || tool === 'fill') return;
         const [row, col] = getCell(e);
         if (row < 0 || row >= size || col < 0 || col >= size) return;
         pixels.current[row][col] = tool === 'eraser' ? '' : color;
-        dirty.current = true;
+        setDirty(true);
         drawCanvas();
-    }, [color, tool, size, getCell, drawCanvas]);
+    }, [color, tool, size, getCell, drawCanvas, setDirty]);
 
     const handleMouseUp = useCallback(() => {
         isDrawing.current = false;

@@ -31,11 +31,13 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState('');
+    const [dirty, setDirty] = useState(false);
 
     useEffect(() => {
         setEditOpen(false);
         setDeleteOpen(false);
         setDeleteError('');
+        setDirty(false);
     }, [sprite?.id]);
 
     const save = async (): Promise<boolean> => {
@@ -60,6 +62,7 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
             });
 
             if (!res.ok) throw new Error('Failed to save sprite');
+            canvasRef.current?.markSaved();
             return true;
         } catch {
             setSaveError('Failed to save sprite');
@@ -117,6 +120,7 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
                         <span className="label sprite__name">{sprite.name}</span>
                         <div className="sprite__actions">
                             <button className='btn btn--primary' onClick={() => save()} disabled={saving}>
+                                {dirty && <span className="unsaved-dot" aria-hidden="true" />}
                                 {saving ? 'Saving…' : 'Save'}
                             </button>
                             <button className='btn' onClick={handleDownloadPng}>
@@ -133,7 +137,7 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
                     {saveError && <span className="form__error">{saveError}</span>}
                     {deleteError && <span className="form__error">{deleteError}</span>}
                     <div className="sprite">
-                        <Canvas key={sprite.id} ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} />
+                        <Canvas key={sprite.id} ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} onDirtyChange={setDirty} />
                     </div>
                     <EditSpriteModal
                         isOpen={editOpen}
