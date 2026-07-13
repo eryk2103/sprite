@@ -20,7 +20,7 @@
 
 .sprite__actions {
     display: flex;
-    align-items: center;
+    align-items: start;
     gap: 0.5rem;
 }
 
@@ -31,4 +31,8 @@
     margin-right: 6px;
     border-radius: 50%;
     background: var(--color-white);
+}
+
+.sprite__name {
+    word-break: break-all;
 }

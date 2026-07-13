@@ -19,7 +19,7 @@ export default function GroupList({ groups, selectedSpriteId, openingSpriteId, o
         <ul className={styles['group-list']}>
             {groups.map(group => (
                 <li key={group.id} className={styles['group-list__item']}>
-                    <div>{group.name}</div>
+                    <div className={styles['group-list__name']}>{group.name}</div>
                     <div className={styles['group__items']}>
                         <button
                             className="btn btn--ghost btn--primary btn--sm"

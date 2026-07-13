@@ -1,9 +1,10 @@
 .project-panel {
     padding: .5em;
     border-right: solid 1px var(--color-border-muted);
-    min-width: 15%;
+    width: 20%;
     display: flex;
     flex-direction: column;
+    position: sticky;
 }
 
 .project-panel__title {
@@ -28,6 +29,13 @@
 .group-list {
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.group-list__name {
+    overflow-x: hidden;
 }
 
 .group__items {

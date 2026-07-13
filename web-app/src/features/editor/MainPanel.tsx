@@ -105,7 +105,7 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
             {sprite ? (
                 <>
                     <div className={styles['sprite__header']}>
-                        <span className="label">{sprite.name}</span>
+                        <span className={`label ${styles['sprite__name']}`}>{sprite.name}</span>
                         <SpriteActions
                             dirty={dirty}
                             saving={saving}
