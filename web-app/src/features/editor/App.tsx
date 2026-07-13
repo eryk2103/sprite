@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useLocation } from 'react-router'
 import './App.css'
 import ActionPanel from './ActionPanel'
 import MainPanel, { type MainPanelHandle } from './MainPanel'
@@ -7,12 +8,19 @@ import UnsavedChangesModal from './UnsavedChangesModal'
 import { type ProjectDetail } from './project'
 import { type Sprite } from './sprite'
 
+type LocationState = {
+  project?: ProjectDetail;
+  sprite?: Sprite;
+} | null;
+
 function App() {
+  const location = useLocation();
+  const openState = location.state as LocationState;
   const [size, setSize] = useState(16);
   const [color, setColor] = useState('#000000');
   const [tool, setTool] = useState('pencil');
-  const [project, setProject] = useState<ProjectDetail|null>(null);
-  const [sprite, setSprite] = useState<Sprite|null>(null);
+  const [project, setProject] = useState<ProjectDetail|null>(openState?.project ?? null);
+  const [sprite, setSprite] = useState<Sprite|null>(openState?.sprite ?? null);
   const [pendingSprite, setPendingSprite] = useState<Sprite|null>(null);
   const [confirmSaving, setConfirmSaving] = useState(false);
   const mainPanelRef = useRef<MainPanelHandle>(null);

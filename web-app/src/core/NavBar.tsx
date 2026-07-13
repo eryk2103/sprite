@@ -10,6 +10,7 @@ export default function Navbar() {
             <span className='logo'>pixel</span>
             <nav className="nav">
                 <NavLink to="/">Editor</NavLink>
+                <NavLink to="/gallery">Gallery</NavLink>
             </nav>
             <div className='auth'>
                 {user === null ?

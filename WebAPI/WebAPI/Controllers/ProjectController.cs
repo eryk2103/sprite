@@ -89,4 +89,50 @@ public class ProjectController(AppDbContext context): ControllerBase
 
         return Ok(new ProjectDto { Id = newProject.Id, Name = newProject.Name });
     }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ProjectDto>> UpdateProject(int id, UpdateProjectDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        var project = await context.Projects
+            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        project.Name = dto.Name;
+        await context.SaveChangesAsync();
+
+        return Ok(new ProjectDto { Id = project.Id, Name = project.Name });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProject(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        var project = await context.Projects
+            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        context.Remove(project);
+        await context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

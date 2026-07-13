@@ -1,0 +1,47 @@
+.gallery-main-panel {
+    padding: 1em;
+    flex-grow: 1;
+}
+
+.gallery-main-panel__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.gallery-group-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 0.75rem;
+}
+
+.gallery-group-list__name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.gallery-group-list__name {
+    font-weight: 600;
+}
+
+.gallery-group-list__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.gallery-sprite-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.gallery-sprite-list__item {
+    font: 400 13px/1 'Space Grotesk', sans-serif;
+    cursor: default;
+}

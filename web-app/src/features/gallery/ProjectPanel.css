@@ -1,0 +1,25 @@
+.gallery-project-panel {
+    padding: .5em;
+    border-right: solid 1px #e0dcd2;
+    min-width: 15%;
+    display: flex;
+    flex-direction: column;
+}
+
+.gallery-project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.gallery-project-list__item {
+    font: 600 13px/1.3 'Space Grotesk', sans-serif;
+    word-break: break-word;
+}
+
+.gallery-project-panel__add-btn {
+    margin-top: auto;
+    align-self: stretch;
+    justify-content: center;
+}
