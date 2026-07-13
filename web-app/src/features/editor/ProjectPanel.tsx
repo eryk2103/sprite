@@ -90,7 +90,7 @@ export default function ProjectPanel({ project, onProjectChange, onSpriteSelect,
                 </div>
                 :
                 <>
-                    <div>
+                    <div className={styles['project-panel__body']}>
                         <div className={styles['project__name-row']}>
                             <span>{project.name}</span>
                         </div>

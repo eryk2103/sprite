@@ -4,11 +4,20 @@
     width: 20%;
     display: flex;
     flex-direction: column;
-    position: sticky;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .project-panel__title {
     margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.project-panel__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
 .project__empty {
@@ -24,13 +33,15 @@
     justify-content: space-between;
     gap: 0.5rem;
     position: relative;
+    flex-shrink: 0;
 }
 
 .group-list {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    max-height: 100%;
+    flex: 1;
+    min-height: 0;
     max-width: 100%;
 }
 
@@ -47,6 +58,8 @@
     flex-direction: column;
     align-items: flex-start;
     padding-left: 1em;
+    flex: 1;
+    min-height: 0;
 }
 
 .group-list__item {
