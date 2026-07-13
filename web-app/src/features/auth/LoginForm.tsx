@@ -16,6 +16,7 @@ export default function LoginForm() {
     });
     const { login, getMe } = useAuth();
     const [error, setError] = useState<string>("");
+    const [demoLoading, setDemoLoading] = useState(false);
     const navigate = useNavigate();
 
     const onSubmit = async (values: LoginFormValues) => {
@@ -35,6 +36,24 @@ export default function LoginForm() {
             navigate("/");
         }catch {
             setError("Something went wrong")
+        }
+    };
+
+    const handleDemoLogin = async () => {
+        setError("");
+        setDemoLoading(true);
+        try {
+            const res = await login(import.meta.env.VITE_DEMO_EMAIL, import.meta.env.VITE_DEMO_PASSWORD);
+            if (!res.ok) {
+                setError("Demo login failed");
+                return;
+            }
+            await getMe();
+            navigate("/");
+        } catch {
+            setError("Demo login failed");
+        } finally {
+            setDemoLoading(false);
         }
     };
 
@@ -69,6 +88,14 @@ export default function LoginForm() {
                 {error && <span className="form__error">{error}</span>}
 
                 <div className="form__footer">
+                    <button
+                        type="button"
+                        className="btn btn--outline btn--secondary"
+                        onClick={handleDemoLogin}
+                        disabled={isSubmitting || demoLoading}
+                    >
+                        {demoLoading ? 'Logging in…' : 'Log in as demo user'}
+                    </button>
                     <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
                         {isSubmitting ? 'Logging in…' : 'Log in'}
                     </button>

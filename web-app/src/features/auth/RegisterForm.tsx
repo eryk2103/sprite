@@ -15,7 +15,26 @@ export default function RegisterForm() {
     });
     const { register, login, getMe } = useAuth();
     const [error, setError] = useState<string>("");
+    const [demoLoading, setDemoLoading] = useState(false);
     const navigate = useNavigate();
+
+    const handleDemoLogin = async () => {
+        setError("");
+        setDemoLoading(true);
+        try {
+            const res = await login(import.meta.env.VITE_DEMO_EMAIL, import.meta.env.VITE_DEMO_PASSWORD);
+            if (!res.ok) {
+                setError("Demo login failed");
+                return;
+            }
+            await getMe();
+            navigate("/");
+        } catch {
+            setError("Demo login failed");
+        } finally {
+            setDemoLoading(false);
+        }
+    };
 
     const onSubmit = async (values: RegisterFormValues) => {
         try {
@@ -90,6 +109,14 @@ export default function RegisterForm() {
                 {error && <span className="form__error">{error}</span>}
 
                 <div className="form__footer">
+                    <button
+                        type="button"
+                        className="btn btn--outline btn--secondary"
+                        onClick={handleDemoLogin}
+                        disabled={isSubmitting || demoLoading}
+                    >
+                        {demoLoading ? 'Logging in…' : 'Log in as demo user'}
+                    </button>
                     <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
                         {isSubmitting ? 'Creating account…' : 'Create account'}
                     </button>
