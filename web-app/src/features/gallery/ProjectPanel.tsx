@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import './ProjectPanel.css';
-import type { Project } from '../editor/project';
+import styles from './ProjectPanel.module.css';
+import { getProjects } from '../../api/projects';
+import type { Project } from '../../types/project';
 
 export default function ProjectPanel() {
     const navigate = useNavigate();
@@ -18,14 +19,7 @@ export default function ProjectPanel() {
         setLoading(true);
         setError('');
 
-        fetch(`${import.meta.env.VITE_API_URL}/api/projects`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to load projects');
-                return res.json();
-            })
+        getProjects()
             .then(setProjects)
             .catch(() => setError('Failed to load projects'))
             .finally(() => setLoading(false));
@@ -47,19 +41,19 @@ export default function ProjectPanel() {
     }, [location.pathname]);
 
     return (
-        <div className="gallery-project-panel">
-            <h4 className="label">Projects</h4>
+        <div className={styles['gallery-project-panel']}>
+            <h3 className="label">Projects</h3>
             {loading && <span className="placeholder">Loading…</span>}
             {!loading && error && <span className="form__error">{error}</span>}
             {!loading && !error && projects.length === 0 && (
                 <span className="placeholder">No projects found</span>
             )}
             {!loading && !error && projects.length > 0 && (
-                <ul className="gallery-project-list">
+                <ul className={styles['gallery-project-list']}>
                     {projects.map(project => (
                         <li
                             key={project.id}
-                            className={`card gallery-project-list__item${project.id === selectedProjectId ? ' card--selected' : ''}`}
+                            className={`card ${styles['gallery-project-list__item']}${project.id === selectedProjectId ? ' card--selected' : ''}`}
                             onClick={() => navigate(`/gallery/${project.id}`)}
                         >
                             {project.name}
@@ -68,7 +62,7 @@ export default function ProjectPanel() {
                 </ul>
             )}
             <button
-                className="btn btn--primary gallery-project-panel__add-btn"
+                className={`btn btn--primary ${styles['gallery-project-panel__add-btn']}`}
                 onClick={() => navigate('/gallery/new')}
             >
                 Add project

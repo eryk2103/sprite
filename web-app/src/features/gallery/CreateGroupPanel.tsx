@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import './MainPanel.css';
+import styles from './MainPanel.module.css';
+import { createGroup } from '../../api/groups';
 
 export default function CreateGroupPanel() {
     const navigate = useNavigate();
@@ -18,15 +19,7 @@ export default function CreateGroupPanel() {
         setError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name: trimmed, projectId: Number(projectId) }),
-            });
-
-            if (!res.ok) throw new Error('Failed to create group');
-
+            await createGroup(trimmed, Number(projectId));
             navigate(`/gallery/${projectId}`);
         } catch {
             setError('Failed to create group');
@@ -36,7 +29,7 @@ export default function CreateGroupPanel() {
     };
 
     return (
-        <div className="gallery-main-panel">
+        <div className={styles['gallery-main-panel']}>
             <h4 className="label">New group</h4>
             <form className="form" onSubmit={handleSubmit}>
                 <div className="form__row">

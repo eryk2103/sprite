@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormValues } from './loginSchema';
 import { useNavigate } from 'react-router';
-import { useAuth } from './authStore';
+import { useAuth } from './AuthContext';
 
 
 export default function LoginForm() {
@@ -16,11 +16,9 @@ export default function LoginForm() {
     });
     const { login, getMe } = useAuth();
     const [error, setError] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const onSubmit = async (values: LoginFormValues) => {
-        setLoading(true);
         try{
             const res = await login(values.email, values.password);
             if(!res.ok) {
@@ -37,13 +35,11 @@ export default function LoginForm() {
             navigate("/");
         }catch {
             setError("Something went wrong")
-        }finally{
-            setLoading(false);
         }
     };
 
     return (
-        <div className='form-wrapper'>
+        <div className='form__wrapper'>
             <h1>Login</h1>
             <form className="form" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="form__field">

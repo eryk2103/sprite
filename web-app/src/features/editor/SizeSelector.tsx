@@ -11,7 +11,7 @@ export default function SizeSelector({ size, onSizeChange }: SizeSelectorProps){
             {SIZES.map(s => (
                 <button
                     key={s}
-                    className={`btn${size === s ? ' btn--active' : ''}`}
+                    className={`btn ${size === s ? 'btn--primary' : 'btn--secondary'}`}
                     onClick={() => onSizeChange(s)}
                 >
                     {s}

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Modal from '../../shared/Modal';
-import { type SpriteSummary } from './sprite';
+import { createSprite } from '../../api/sprites';
+import { type SpriteSummary } from '../../types/sprite';
 
 interface CreateSpriteModalProps {
     isOpen: boolean;
@@ -14,12 +15,11 @@ export default function CreateSpriteModal({ isOpen, onClose, groupId, onCreate }
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        if (!isOpen) {
-            setName('');
-            setError('');
-        }
-    }, [isOpen]);
+    const handleClose = () => {
+        setName('');
+        setError('');
+        onClose();
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,16 +30,8 @@ export default function CreateSpriteModal({ isOpen, onClose, groupId, onCreate }
         setError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ groupId, name: trimmed, data: '{}' }),
-            });
-
-            if (!res.ok) throw new Error('Failed to create sprite');
-
-            const sprite: SpriteSummary = await res.json();
+            const sprite = await createSprite(groupId, trimmed, '{}');
+            setName('');
             onCreate(sprite);
         } catch {
             setError('Failed to create sprite');
@@ -49,7 +41,7 @@ export default function CreateSpriteModal({ isOpen, onClose, groupId, onCreate }
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Create Sprite">
+        <Modal isOpen={isOpen} onClose={handleClose} title="Create Sprite">
             <form className="form" onSubmit={handleSubmit}>
                 <div className="form__row">
                     <div className="form__field">

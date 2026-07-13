@@ -1,7 +1,8 @@
 import { useRef, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
-import './Canvas.css';
+import styles from './Canvas.module.css';
+import { floodFill, pixelsToPngBlob } from './pixelGrid';
 
-const CANVAS_SIZE = 600;
+const CANVAS_SIZE = 512;
 
 interface CanvasProps {
     size: number;
@@ -46,24 +47,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
         getData: () => JSON.stringify(pixels.current),
         isDirty: () => dirty.current,
         markSaved: () => setDirty(false),
-        toBlob: () => {
-            const exportCanvas = document.createElement('canvas');
-            exportCanvas.width = size;
-            exportCanvas.height = size;
-            const ctx = exportCanvas.getContext('2d')!;
-
-            for (let row = 0; row < size; row++) {
-                for (let col = 0; col < size; col++) {
-                    const c = pixels.current[row]?.[col];
-                    if (c) {
-                        ctx.fillStyle = c;
-                        ctx.fillRect(col, row, 1, 1);
-                    }
-                }
-            }
-
-            return new Promise<Blob | null>(resolve => exportCanvas.toBlob(resolve, 'image/png'));
-        },
+        toBlob: () => pixelsToPngBlob(pixels.current, size),
     }), [size, setDirty]);
 
     const drawCanvas = useCallback(() => {
@@ -117,16 +101,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
         const [row, col] = getCell(e);
 
         if (tool === 'fill') {
-            const target = pixels.current[row]?.[col] ?? '';
-            if (target === color) return;
-            const stack: [number, number][] = [[row, col]];
-            while (stack.length) {
-                const [r, c] = stack.pop()!;
-                if (r < 0 || r >= size || c < 0 || c >= size) continue;
-                if (pixels.current[r][c] !== target) continue;
-                pixels.current[r][c] = color;
-                stack.push([r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]);
-            }
+            floodFill(pixels.current, row, col, color, size);
         } else {
             if (row < 0 || row >= size || col < 0 || col >= size) return;
             pixels.current[row][col] = tool === 'eraser' ? '' : color;
@@ -149,10 +124,10 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
     }, []);
 
     return (
-        <div className="sprite__canvas">
+        <div className={styles['sprite__canvas']}>
             <canvas
                 ref={canvasRef}
-                id="canvas"
+                className={styles['sprite__canvas-surface']}
                 width={CANVAS_SIZE}
                 height={CANVAS_SIZE}
                 onMouseDown={handleMouseDown}
@@ -160,7 +135,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
             />
-            <span className="sprite__size label">{size} x {size}</span>
+            <span className={`${styles['sprite__size']} label`}>{size} x {size}</span>
         </div>
     );
 });

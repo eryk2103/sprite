@@ -1,7 +1,85 @@
+/* Theme */
+
 :root {
+  /* Brand */
   --accent: #7c6cf0;
+  --accent-rgb: 124, 108, 240;
   --accent-edge: #6559c6;
+
+  /* Buttons — solid / hover / active per variant */
+  --btn-primary-hover: #9284f5;
+  --btn-primary-active: #6656d6;
+  --btn-primary-outline-text: #a396ff;
+
+  --btn-secondary: var(--color-border-subtle);
+  --btn-secondary-hover: var(--color-bg-hover);
+  --btn-secondary-active: var(--color-border);
+  --btn-secondary-text: var(--color-text-hover);
+  --btn-secondary-outline-text: var(--color-text-muted);
+  --btn-secondary-outline-border: var(--color-border);
+  --btn-secondary-tint-weak: rgba(26, 26, 26, 0.05);
+  --btn-secondary-tint-strong: rgba(26, 26, 26, 0.1);
+
+  --btn-success: #3ab873;
+  --btn-success-rgb: 58, 184, 115;
+  --btn-success-hover: #52d18b;
+  --btn-success-active: #2f9c60;
+  --btn-success-text: #062b16;
+  --btn-success-outline-text: #5ee3a3;
+
+  --btn-warning: #e0a04a;
+  --btn-warning-rgb: 224, 160, 74;
+  --btn-warning-hover: #eeb867;
+  --btn-warning-active: #c9873a;
+  --btn-warning-text: #2a1c08;
+  --btn-warning-outline-text: #eeb867;
+
+  --btn-danger: #e5578b;
+  --btn-danger-rgb: 229, 87, 139;
+  --btn-danger-hover: #ee74a0;
+  --btn-danger-active: #c9436f;
+  --btn-danger-outline-text: #f186ac;
+
+  --btn-info: #3ab6d6;
+  --btn-info-rgb: 58, 182, 214;
+  --btn-info-hover: #5cc9e5;
+  --btn-info-active: #2f9bb8;
+  --btn-info-text: #04222b;
+  --btn-info-outline-text: #7ed4e8;
+
+  --btn-disabled-bg: var(--color-border-muted);
+  --btn-disabled-text: var(--color-text-disabled);
+
+  /* Neutrals */
+  --color-white: #ffffff;
+  --color-bg: #faf9f7;
+  --color-bg-hover: #f2f0ea;
+  --color-bg-muted: #e6e3db;
+  --color-border: #d6d1c6;
+  --color-border-muted: #e0dcd2;
+  --color-border-subtle: #e8e4dc;
+  --color-checker: #eeeeee;
+
+  /* Text */
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b6862;
+  --color-text-mutedest: #908c82;
+  --color-text-hover: #403d36;
+  --color-text-disabled: #bdb9af;
+  --color-text-placeholder: #808080;
+
+  /* Feedback */
+  --color-error: #d64545;
+
+  /* Overlay */
+  --overlay-backdrop: rgba(0, 0, 0, 0.45);
+  --overlay-shadow: rgba(0, 0, 0, 0.18);
+
+  /* Canvas */
+  --color-canvas-border: #000000;
 }
+
+/* Base / reset */
 
 body{
   margin: 0;
@@ -13,93 +91,182 @@ ul {
   padding: 0;
 }
 
+h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Layout */
+
 #root {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-h4 {
-  margin: 0;
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
+
+.selector {
+    display: flex;
+    gap: .3rem;
+}
+
+/* Typography */
 
 .label {
   font-family: "Bitcount Prop Single", system-ui;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  color: #908c82;
+  color: var(--color-text-mutedest);
 }
+
+.logo {
+  font-size: 2rem;
+}
+
+.placeholder {
+  text-align: center;
+  color: var(--color-text-placeholder);
+  margin-top: 5rem;
+}
+
+/* Texel — Notched Pixel Button classes
+   Handoff CSS matching Notched Pixel Buttons.dc.html, adapted to BEM.
+   Usage: <button class="btn btn--primary">Primary</button>
+          <button class="btn btn--outline btn--danger">Danger</button>
+          <button class="btn btn--ghost btn--info btn--sm">Info</button> */
 
 .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 33px;
-  padding: 0 13px;
-  font: 600 13px/1 'Space Grotesk', sans-serif;
-  letter-spacing: 0.01em;
-  color: #6b6862;
-  background: #ffffff;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  padding: 10px 18px;
   border: none;
   cursor: pointer;
-  clip-path: polygon(
-    0 5px, 5px 0,
-    calc(100% - 5px) 0, 100% 5px,
-    100% calc(100% - 5px), calc(100% - 5px) 100%,
-    5px 100%, 0 calc(100% - 5px)
-  );
-  box-shadow: inset 0 0 0 1.5px #d6d1c6;
-  transition: background .12s, box-shadow .12s, color .12s;
+  clip-path: polygon(0 5px, 5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px));
+  transition: background-color .08s;
 }
 
-.btn:hover { background: #f2f0ea; color: #403d36; }
-
-.btn--primary,
-.btn--active {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: inset 0 0 0 1.5px var(--accent-edge);
+.btn:disabled {
+  cursor: not-allowed;
+  background: var(--btn-disabled-bg) !important;
+  color: var(--btn-disabled-text) !important;
+  box-shadow: none !important;
 }
 
-.btn--primary:hover { background: var(--accent); color: #fff; }
-
-.btn:disabled { color: #bdb9af; cursor: default; }
-
-.btn--icon {
-  width: 33px;
-  height: 31px;
-  padding: 0;
-  justify-content: center;
-  clip-path: polygon(
-    0 4px, 4px 0,
-    calc(100% - 4px) 0, 100% 4px,
-    100% calc(100% - 4px), calc(100% - 4px) 100%,
-    4px 100%, 0 calc(100% - 4px)
-  );
+/* ---- sizes ---- */
+.btn--sm {
+  font-size: 11px;
+  padding: 7px 14px;
+  clip-path: polygon(0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px));
 }
 
-.btn--link {
-  display: inline-flex;
-  align-items: center;
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--accent);
-  font: 600 12px/1 'Space Grotesk', sans-serif;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color .12s;
+.btn--lg {
+  font-size: 16px;
+  padding: 17px 32px;
 }
 
-.btn--link:hover { color: var(--accent-edge); text-decoration: underline; }
+/* ---- solid (default) ---- */
+.btn--primary   { background: var(--accent); color: var(--color-white); }
+.btn--primary:hover   { background: var(--btn-primary-hover); }
+.btn--primary:active  { background: var(--btn-primary-active); }
 
-.btn--link:disabled { color: #bdb9af; cursor: default; text-decoration: none; }
+.btn--secondary { background: var(--btn-secondary); color: var(--btn-secondary-text); }
+.btn--secondary:hover  { background: var(--btn-secondary-hover); }
+.btn--secondary:active { background: var(--btn-secondary-active); }
+
+.btn--success   { background: var(--btn-success); color: var(--btn-success-text); }
+.btn--success:hover   { background: var(--btn-success-hover); }
+.btn--success:active  { background: var(--btn-success-active); }
+
+.btn--warning   { background: var(--btn-warning); color: var(--btn-warning-text); }
+.btn--warning:hover   { background: var(--btn-warning-hover); }
+.btn--warning:active  { background: var(--btn-warning-active); }
+
+.btn--danger    { background: var(--btn-danger); color: var(--color-white); }
+.btn--danger:hover    { background: var(--btn-danger-hover); }
+.btn--danger:active   { background: var(--btn-danger-active); }
+
+.btn--info      { background: var(--btn-info); color: var(--btn-info-text); }
+.btn--info:hover      { background: var(--btn-info-hover); }
+.btn--info:active     { background: var(--btn-info-active); }
+
+/* ---- outline ---- */
+.btn--outline { background: transparent; }
+
+.btn--outline.btn--primary   { color: var(--btn-primary-outline-text); box-shadow: inset 0 0 0 2px var(--accent); }
+.btn--outline.btn--primary:hover  { background: rgba(var(--accent-rgb), 0.14); }
+.btn--outline.btn--primary:active { background: rgba(var(--accent-rgb), 0.28); }
+
+.btn--outline.btn--secondary { color: var(--btn-secondary-outline-text); box-shadow: inset 0 0 0 2px var(--btn-secondary-outline-border); }
+.btn--outline.btn--secondary:hover  { background: var(--btn-secondary-tint-weak); }
+.btn--outline.btn--secondary:active { background: var(--btn-secondary-tint-strong); }
+
+.btn--outline.btn--success   { color: var(--btn-success-outline-text); box-shadow: inset 0 0 0 2px var(--btn-success); }
+.btn--outline.btn--success:hover  { background: rgba(var(--btn-success-rgb), 0.14); }
+.btn--outline.btn--success:active { background: rgba(var(--btn-success-rgb), 0.28); }
+
+.btn--outline.btn--warning   { color: var(--btn-warning-outline-text); box-shadow: inset 0 0 0 2px var(--btn-warning); }
+.btn--outline.btn--warning:hover  { background: rgba(var(--btn-warning-rgb), 0.14); }
+.btn--outline.btn--warning:active { background: rgba(var(--btn-warning-rgb), 0.28); }
+
+.btn--outline.btn--danger    { color: var(--btn-danger-outline-text); box-shadow: inset 0 0 0 2px var(--btn-danger); }
+.btn--outline.btn--danger:hover  { background: rgba(var(--btn-danger-rgb), 0.14); }
+.btn--outline.btn--danger:active { background: rgba(var(--btn-danger-rgb), 0.28); }
+
+.btn--outline.btn--info      { color: var(--btn-info-outline-text); box-shadow: inset 0 0 0 2px var(--btn-info); }
+.btn--outline.btn--info:hover  { background: rgba(var(--btn-info-rgb), 0.14); }
+.btn--outline.btn--info:active { background: rgba(var(--btn-info-rgb), 0.28); }
+
+.btn--outline:disabled { box-shadow: inset 0 0 0 2px var(--btn-disabled-bg) !important; }
+
+/* ---- ghost ---- */
+.btn--ghost { background: transparent; }
+
+.btn--ghost.btn--primary   { color: var(--btn-primary-outline-text); }
+.btn--ghost.btn--primary:hover   { background: rgba(var(--accent-rgb), 0.12); }
+
+.btn--ghost.btn--secondary { color: var(--btn-secondary-outline-text); }
+.btn--ghost.btn--secondary:hover { background: var(--btn-secondary-tint-weak); }
+
+.btn--ghost.btn--success   { color: var(--btn-success-outline-text); }
+.btn--ghost.btn--success:hover   { background: rgba(var(--btn-success-rgb), 0.12); }
+
+.btn--ghost.btn--warning   { color: var(--btn-warning-outline-text); }
+.btn--ghost.btn--warning:hover   { background: rgba(var(--btn-warning-rgb), 0.12); }
+
+.btn--ghost.btn--danger    { color: var(--btn-danger-outline-text); }
+.btn--ghost.btn--danger:hover    { background: rgba(var(--btn-danger-rgb), 0.12); }
+
+.btn--ghost.btn--info      { color: var(--btn-info-outline-text); }
+.btn--ghost.btn--info:hover      { background: rgba(var(--btn-info-rgb), 0.12); }
+
+/* ---- icon spacing ---- */
+.btn--icon { display: flex; align-items: center; gap: 7px; }
+
+/* Cards */
 
 .card {
-  background: #fff;
-  padding: 0.45rem 0.6rem;
-  box-shadow: inset 0 0 0 1.5px #d6d1c6;
+  background: var(--color-white);
+  padding: 0.75rem 1rem;
+  box-shadow: inset 0 0 0 1.5px var(--color-border);
   clip-path: polygon(
     0 4px, 4px 0,
     calc(100% - 4px) 0, 100% 4px,
@@ -111,63 +278,25 @@ h4 {
 }
 
 .card:hover {
-  background: #f2f0ea;
+  background: rgba(var(--accent-rgb), 0.15);
   box-shadow: inset 0 0 0 1.5px var(--accent-edge);
 }
 
 .card--selected,
 .card--selected:hover {
-  background: var(--accent);
-  color: #fff;
+  background: rgba(var(--accent-rgb), 0.15);
+  color: var(--accent-edge);
   box-shadow: inset 0 0 0 1.5px var(--accent-edge);
 }
 
 .card--loading,
 .card--loading:hover {
-  background: #f2f0ea;
-  color: #bdb9af;
+  background: var(--color-bg-hover);
+  color: var(--color-text-disabled);
   cursor: default;
 }
 
-.selector {
-    display: flex;
-    gap: .3rem;
-}
-
-.placeholder {
-  text-align: center;
-  color: gray;
-  margin-top: 5rem;
-}
-
-.project-list {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
-
-.project-list__row {
-  border-bottom: 1px solid #e8e4dc;
-}
-
-.project-list__row:first-child {
-  border-top: 1px solid #e8e4dc;
-}
-
-.project-list__item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 0.6rem 0.25rem;
-  background: none;
-  border: none;
-  font: 400 13px/1 'Space Grotesk', sans-serif;
-  cursor: pointer;
-}
-
-.project-list__item:hover {
-  background: #f2f0ea;
-}
+/* Forms */
 
 .form {
   display: flex;
@@ -184,7 +313,7 @@ h4 {
 .form__label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #6b6862;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -193,9 +322,9 @@ h4 {
   height: 33px;
   padding: 0 10px;
   font: 400 13px/1 'Space Grotesk', sans-serif;
-  color: #1a1a1a;
-  background: #faf9f7;
-  border: 1.5px solid #d6d1c6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
   outline: none;
   clip-path: polygon(
     0 4px, 4px 0,
@@ -207,12 +336,12 @@ h4 {
 
 .form__input:focus {
   border-color: var(--accent);
-  background: #fff;
+  background: var(--color-white);
 }
 
 .form__error {
   font-size: 0.75rem;
-  color: #d64545;
+  color: var(--color-error);
 }
 
 .form__footer {
@@ -233,32 +362,6 @@ h4 {
   flex: 1;
 }
 
-.form-wrapper {
+.form__wrapper {
   min-width: 600px;
-}
-
-.center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.logo {
-  font-size: 2rem;
-}
-
-h4 {
-  font-size: 1.2rem;
-}
-
-.center {
-  display: flex;
-  justify-content: center;
-}
-
-.icon {
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: black;
 }

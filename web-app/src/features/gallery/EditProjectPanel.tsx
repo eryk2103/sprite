@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import './MainPanel.css';
-import type { Project } from '../editor/project';
+import styles from './MainPanel.module.css';
+import { getProject, updateProject } from '../../api/projects';
 
 export default function EditProjectPanel() {
     const navigate = useNavigate();
@@ -19,15 +19,8 @@ export default function EditProjectPanel() {
         setLoading(true);
         setLoadError('');
 
-        fetch(`${import.meta.env.VITE_API_URL}/api/projects/${projectId}`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to load project');
-                return res.json();
-            })
-            .then((project: Project) => setName(project.name))
+        getProject(projectId)
+            .then(project => setName(project.name))
             .catch(() => setLoadError('Failed to load project'))
             .finally(() => setLoading(false));
     }, [projectId]);
@@ -41,15 +34,7 @@ export default function EditProjectPanel() {
         setSaveError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${projectId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name: trimmed }),
-            });
-
-            if (!res.ok) throw new Error('Failed to update project');
-
+            await updateProject(projectId, trimmed);
             navigate(`/gallery/${projectId}`);
         } catch {
             setSaveError('Failed to update project');
@@ -60,7 +45,7 @@ export default function EditProjectPanel() {
 
     if (loading) {
         return (
-            <div className="gallery-main-panel">
+            <div className={styles['gallery-main-panel']}>
                 <span className="placeholder">Loading…</span>
             </div>
         );
@@ -68,14 +53,14 @@ export default function EditProjectPanel() {
 
     if (loadError) {
         return (
-            <div className="gallery-main-panel">
+            <div className={styles['gallery-main-panel']}>
                 <span className="form__error">{loadError}</span>
             </div>
         );
     }
 
     return (
-        <div className="gallery-main-panel">
+        <div className={styles['gallery-main-panel']}>
             <h4 className="label">Edit project</h4>
             <form className="form" onSubmit={handleSubmit}>
                 <div className="form__row">

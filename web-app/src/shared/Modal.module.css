@@ -1,7 +1,7 @@
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--overlay-backdrop);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -9,7 +9,7 @@
 }
 
 .modal {
-    background: #fff;
+    background: var(--color-white);
     min-width: 600px;
     max-width: 90vw;
     max-height: 85vh;
@@ -21,7 +21,7 @@
         100% calc(100% - 10px), calc(100% - 10px) 100%,
         10px 100%, 0 calc(100% - 10px)
     );
-    filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.18));
+    filter: drop-shadow(6px 6px 0 var(--overlay-shadow));
 }
 
 .modal__header {
@@ -29,7 +29,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1rem;
-    border-bottom: 1.5px solid #e8e4dc;
+    border-bottom: 1.5px solid var(--color-border-subtle);
 }
 
 .modal__title {

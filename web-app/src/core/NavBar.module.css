@@ -9,14 +9,14 @@
     position: relative;
     font: 600 16px/1 'Space Grotesk', sans-serif;
     letter-spacing: 0.01em;
-    color: #6b6862;
+    color: var(--color-text-muted);
     text-decoration: none;
     padding-bottom: 0.35rem;
     transition: color .12s;
 }
 
 .nav__link:hover {
-    color: #403d36;
+    color: var(--color-text-hover);
 }
 
 .nav__link--active {
@@ -35,7 +35,7 @@
 
 .app-header {
     padding: .5em;
-    border-bottom: solid 1px #e0dcd2;
+    border-bottom: solid 1px var(--color-border-muted);
     display: flex;
 }
 

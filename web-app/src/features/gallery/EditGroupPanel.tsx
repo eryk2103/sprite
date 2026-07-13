@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import './MainPanel.css';
-import type { ProjectDetail } from '../editor/project';
+import styles from './MainPanel.module.css';
+import { getProject } from '../../api/projects';
+import { updateGroup } from '../../api/groups';
 
 export default function EditGroupPanel() {
     const navigate = useNavigate();
@@ -19,15 +20,8 @@ export default function EditGroupPanel() {
         setLoading(true);
         setLoadError('');
 
-        fetch(`${import.meta.env.VITE_API_URL}/api/projects/${projectId}`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to load group');
-                return res.json();
-            })
-            .then((project: ProjectDetail) => {
+        getProject(projectId)
+            .then(project => {
                 const group = project.groups.find(g => g.id === Number(groupId));
                 if (!group) throw new Error('Group not found');
                 setName(group.name);
@@ -45,15 +39,7 @@ export default function EditGroupPanel() {
         setSaveError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name: trimmed }),
-            });
-
-            if (!res.ok) throw new Error('Failed to update group');
-
+            await updateGroup(groupId, trimmed);
             navigate(`/gallery/${projectId}`);
         } catch {
             setSaveError('Failed to update group');
@@ -64,7 +50,7 @@ export default function EditGroupPanel() {
 
     if (loading) {
         return (
-            <div className="gallery-main-panel">
+            <div className={styles['gallery-main-panel']}>
                 <span className="placeholder">Loading…</span>
             </div>
         );
@@ -72,14 +58,14 @@ export default function EditGroupPanel() {
 
     if (loadError) {
         return (
-            <div className="gallery-main-panel">
+            <div className={styles['gallery-main-panel']}>
                 <span className="form__error">{loadError}</span>
             </div>
         );
     }
 
     return (
-        <div className="gallery-main-panel">
+        <div className={styles['gallery-main-panel']}>
             <h4 className="label">Edit group</h4>
             <form className="form" onSubmit={handleSubmit}>
                 <div className="form__row">

@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router';
-import './Gallery.css';
+import styles from './Gallery.module.css';
 import ProjectPanel from "./ProjectPanel";
 
 export default function Gallery() {
     return(
-        <div className="panels">
+        <div className={styles.panels}>
             <ProjectPanel/>
             <Outlet/>
         </div>

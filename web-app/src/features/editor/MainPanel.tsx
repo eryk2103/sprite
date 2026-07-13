@@ -1,11 +1,13 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useAuth } from '../auth/authStore';
+import { useAuth } from '../auth/AuthContext';
 import Canvas, { type CanvasHandle } from './Canvas';
 import EditSpriteModal from './EditSpriteModal';
-import DeleteSpriteModal from './DeleteSpriteModal';
-import './MainPanel.css';
-import type { Sprite } from './sprite';
+import ConfirmModal from '../../shared/ConfirmModal';
+import SpriteActions from './SpriteActions';
+import styles from './MainPanel.module.css';
+import { saveSpriteData, deleteSprite } from '../../api/sprites';
+import type { Sprite } from '../../types/sprite';
 
 interface MainPanelProps {
     size: number;
@@ -53,15 +55,7 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
 
         try {
             const data = canvasRef.current?.getData() ?? '';
-
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites/${sprite.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ data }),
-            });
-
-            if (!res.ok) throw new Error('Failed to save sprite');
+            await saveSpriteData(sprite.id, data);
             canvasRef.current?.markSaved();
             return true;
         } catch {
@@ -91,13 +85,7 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
         setDeleteError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites/${sprite.id}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            });
-
-            if (!res.ok) throw new Error('Failed to delete sprite');
-
+            await deleteSprite(sprite.id);
             setDeleteOpen(false);
             onSpriteDelete(sprite.id);
         } catch {
@@ -113,30 +101,23 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
     }));
 
     return (
-        <div className="main-panel">
+        <div className={styles['main-panel']}>
             {sprite ? (
                 <>
-                    <div className='sprite__header'>
-                        <span className="label sprite__name">{sprite.name}</span>
-                        <div className="sprite__actions">
-                            <button className='btn btn--primary' onClick={() => save()} disabled={saving}>
-                                {dirty && <span className="unsaved-dot" aria-hidden="true" />}
-                                {saving ? 'Saving…' : 'Save'}
-                            </button>
-                            <button className='btn' onClick={handleDownloadPng}>
-                                Download PNG
-                            </button>
-                            <button className='btn' onClick={() => setEditOpen(true)}>
-                                Edit
-                            </button>
-                            <button className='btn' onClick={() => setDeleteOpen(true)}>
-                                Delete
-                            </button>
-                        </div>
+                    <div className={styles['sprite__header']}>
+                        <span className="label">{sprite.name}</span>
+                        <SpriteActions
+                            dirty={dirty}
+                            saving={saving}
+                            onSave={() => save()}
+                            onDownload={handleDownloadPng}
+                            onEdit={() => setEditOpen(true)}
+                            onDelete={() => setDeleteOpen(true)}
+                        />
                     </div>
                     {saveError && <span className="form__error">{saveError}</span>}
                     {deleteError && <span className="form__error">{deleteError}</span>}
-                    <div className="sprite">
+                    <div className={styles.sprite}>
                         <Canvas key={sprite.id} ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} onDirtyChange={setDirty} />
                     </div>
                     <EditSpriteModal
@@ -148,10 +129,13 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
                             setEditOpen(false);
                         }}
                     />
-                    <DeleteSpriteModal
+                    <ConfirmModal
                         isOpen={deleteOpen}
-                        spriteName={sprite.name}
-                        deleting={deleting}
+                        title="Delete Sprite"
+                        message={`Delete sprite "${sprite.name}"? This cannot be undone.`}
+                        confirmLabel="Delete"
+                        confirmingLabel="Deleting…"
+                        confirming={deleting}
                         onConfirm={handleDelete}
                         onCancel={() => setDeleteOpen(false)}
                     />

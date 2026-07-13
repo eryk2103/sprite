@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Modal from '../../shared/Modal';
-import { type Project } from './project';
+import styles from './ProjectSelectModal.module.css';
+import { getProjects, createProject } from '../../api/projects';
+import { type Project } from '../../types/project';
 
 interface ProjectSelectModalProps {
     isOpen: boolean;
@@ -23,25 +25,17 @@ export default function ProjectSelectModal({ isOpen, onClose, onSelect }: Projec
         setLoading(true);
         setError('');
 
-        fetch(`${import.meta.env.VITE_API_URL}/api/projects`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to load projects');
-                return res.json();
-            })
+        getProjects()
             .then(setProjects)
             .catch(() => setError('Failed to load projects'))
             .finally(() => setLoading(false));
     }, [isOpen]);
 
-    useEffect(() => {
-        if (!isOpen) {
-            setNewProjectName('');
-            setCreateError('');
-        }
-    }, [isOpen]);
+    const handleClose = () => {
+        setNewProjectName('');
+        setCreateError('');
+        onClose();
+    };
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,16 +46,8 @@ export default function ProjectSelectModal({ isOpen, onClose, onSelect }: Projec
         setCreateError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name }),
-            });
-
-            if (!res.ok) throw new Error('Failed to create project');
-
-            const project = await res.json();
+            const project = await createProject(name);
+            setNewProjectName('');
             onSelect(project);
         } catch {
             setCreateError('Failed to create project');
@@ -71,19 +57,19 @@ export default function ProjectSelectModal({ isOpen, onClose, onSelect }: Projec
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Open Project">
+        <Modal isOpen={isOpen} onClose={handleClose} title="Open Project">
             {loading && <span className="placeholder">Loading…</span>}
             {!loading && error && <span className="form__error">{error}</span>}
             {!loading && !error && projects.length === 0 && (
                 <span className="placeholder">No projects found</span>
             )}
             {!loading && !error && projects.length > 0 && (
-                <ul className="project-list">
+                <ul className={styles['project-list']}>
                     {projects.map(project => (
-                        <li key={project.id} className="project-list__row">
+                        <li key={project.id} className={styles['project-list__row']}>
                             <button
                                 type="button"
-                                className="project-list__item"
+                                className={styles['project-list__item']}
                                 onClick={() => onSelect(project)}
                             >
                                 {project.name}

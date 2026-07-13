@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import './MainPanel.css';
-import type { Project } from '../editor/project';
+import styles from './MainPanel.module.css';
+import { createProject } from '../../api/projects';
 
 export default function CreateProjectPanel() {
     const navigate = useNavigate();
@@ -18,16 +18,7 @@ export default function CreateProjectPanel() {
         setError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name: trimmed }),
-            });
-
-            if (!res.ok) throw new Error('Failed to create project');
-
-            const project: Project = await res.json();
+            const project = await createProject(trimmed);
             navigate(`/gallery/${project.id}`);
         } catch {
             setError('Failed to create project');
@@ -37,7 +28,7 @@ export default function CreateProjectPanel() {
     };
 
     return (
-        <div className="gallery-main-panel">
+        <div className={styles['gallery-main-panel']}>
             <h4 className="label">New project</h4>
             <form className="form" onSubmit={handleSubmit}>
                 <div className="form__row">

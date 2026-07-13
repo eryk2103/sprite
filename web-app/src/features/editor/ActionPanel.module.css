@@ -1,11 +1,11 @@
-.action-panel{
-    border-left: solid 1px #e0dcd2;
+.action-panel {
+    border-left: solid 1px var(--color-border-muted);
     padding: .5em;
     min-width: 15%;
 }
 
 .section {
-    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
 .section__title {

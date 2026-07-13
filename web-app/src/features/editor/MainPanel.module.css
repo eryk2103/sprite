@@ -2,7 +2,7 @@
     flex-grow: 1;
     padding: .5em;
     position: relative;
-    background: radial-gradient(circle at 50% 42%, #ffffff 0%, #e6e3db 78%);
+    background: radial-gradient(circle at 50% 42%, var(--color-white) 0%, var(--color-bg-hover) 78%);
 }
 
 .sprite {
@@ -24,9 +24,11 @@
     gap: 0.5rem;
 }
 
-.unsaved-dot {
+.sprite__unsaved-dot {
+    display: inline-block;
     width: 8px;
     height: 8px;
+    margin-right: 6px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--color-white);
 }

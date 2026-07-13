@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Modal from '../../shared/Modal';
-import { type Group } from './group';
+import { createGroup } from '../../api/groups';
+import { type Group } from '../../types/group';
 
 interface CreateGroupModalProps {
     isOpen: boolean;
@@ -14,12 +15,11 @@ export default function CreateGroupModal({ isOpen, onClose, projectId, onCreate 
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        if (!isOpen) {
-            setName('');
-            setError('');
-        }
-    }, [isOpen]);
+    const handleClose = () => {
+        setName('');
+        setError('');
+        onClose();
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,16 +30,8 @@ export default function CreateGroupModal({ isOpen, onClose, projectId, onCreate 
         setError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name: trimmed, projectId }),
-            });
-
-            if (!res.ok) throw new Error('Failed to create group');
-
-            const group: Group = await res.json();
+            const group = await createGroup(trimmed, projectId);
+            setName('');
             onCreate(group);
         } catch {
             setError('Failed to create group');
@@ -49,7 +41,7 @@ export default function CreateGroupModal({ isOpen, onClose, projectId, onCreate 
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Create Group">
+        <Modal isOpen={isOpen} onClose={handleClose} title="Create Group">
             <form className="form" onSubmit={handleSubmit}>
                 <div className="form__row">
                     <div className="form__field">

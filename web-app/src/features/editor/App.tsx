@@ -1,12 +1,13 @@
 import { useRef, useState } from 'react'
 import { useLocation } from 'react-router'
-import './App.css'
+import styles from './App.module.css'
 import ActionPanel from './ActionPanel'
 import MainPanel, { type MainPanelHandle } from './MainPanel'
 import ProjectPanel from './ProjectPanel'
 import UnsavedChangesModal from './UnsavedChangesModal'
-import { type ProjectDetail } from './project'
-import { type Sprite, getSpriteSize } from './sprite'
+import { renameSpriteInProject, removeSpriteFromProject } from './projectUpdates'
+import { type ProjectDetail } from '../../types/project'
+import { type Sprite, getSpriteSize } from '../../types/sprite'
 
 type LocationState = {
   project?: ProjectDetail;
@@ -53,29 +54,17 @@ function App() {
 
   const handleSpriteRename = (renamed: Sprite) => {
     setSprite(renamed);
-    setProject(prev => prev ? {
-      ...prev,
-      groups: prev.groups.map(g => ({
-        ...g,
-        sprites: g.sprites.map(s => s.id === renamed.id ? { ...s, name: renamed.name } : s),
-      })),
-    } : prev);
+    setProject(prev => prev ? renameSpriteInProject(prev, renamed) : prev);
   };
 
   const handleSpriteDelete = (deletedId: number) => {
     setSprite(prev => prev?.id === deletedId ? null : prev);
-    setProject(prev => prev ? {
-      ...prev,
-      groups: prev.groups.map(g => ({
-        ...g,
-        sprites: g.sprites.filter(s => s.id !== deletedId),
-      })),
-    } : prev);
+    setProject(prev => prev ? removeSpriteFromProject(prev, deletedId) : prev);
   };
 
   return (
     <>
-      <div className="panels">
+      <div className={styles.panels}>
         <ProjectPanel project={project} onProjectChange={setProject} onSpriteSelect={handleSpriteSelect} selectedSpriteId={sprite?.id ?? null}/>
         <MainPanel
           ref={mainPanelRef}

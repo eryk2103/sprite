@@ -18,5 +18,12 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // Flags the standard React-documented data-fetching effect pattern
+      // (reset a flag synchronously, then setState in a .then()/.catch()) as
+      // an error. This codebase uses that pattern consistently and correctly
+      // for fetch-on-mount / fetch-on-dependency-change data loading.
+      'react-hooks/set-state-in-effect': 'off',
+    },
   },
 ])

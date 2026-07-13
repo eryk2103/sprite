@@ -1,6 +1,6 @@
 .gallery-project-panel {
     padding: .5em;
-    border-right: solid 1px #e0dcd2;
+    border-right: solid 1px var(--color-border-muted);
     min-width: 15%;
     display: flex;
     flex-direction: column;

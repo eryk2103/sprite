@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Modal from '../../shared/Modal';
-import { type Sprite } from './sprite';
+import { renameSprite } from '../../api/sprites';
+import { type Sprite } from '../../types/sprite';
 
 interface EditSpriteModalProps {
     isOpen: boolean;
@@ -30,15 +31,7 @@ export default function EditSpriteModal({ isOpen, onClose, sprite, onRename }: E
         setError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/sprites/${sprite.id}/rename`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name: trimmed }),
-            });
-
-            if (!res.ok) throw new Error('Failed to rename sprite');
-
+            await renameSprite(sprite.id, trimmed);
             onRename({ ...sprite, name: trimmed });
         } catch {
             setError('Failed to rename sprite');

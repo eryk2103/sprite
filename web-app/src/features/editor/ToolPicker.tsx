@@ -11,7 +11,7 @@ export default function ToolPicker({ tool, onToolChange }: ToolPickerProps) {
             {TOOLS.map(t => (
                 <button
                     key={t}
-                    className={`btn${tool === t ? ' btn--active' : ''}`}
+                    className={`btn ${tool === t ? 'btn--primary' : 'btn--secondary'}`}
                     onClick={() => onToolChange(t)}
                 >
                     {t.charAt(0).toUpperCase() + t.slice(1)}

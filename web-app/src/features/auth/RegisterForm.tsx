@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterFormValues } from './registerSchema';
 import { useNavigate } from 'react-router';
-import { useAuth } from './authStore';
+import { useAuth } from './AuthContext';
 
 export default function RegisterForm() {
     const {
@@ -48,7 +48,7 @@ export default function RegisterForm() {
     };
 
     return (
-        <div className='form-wrapper'>
+        <div className='form__wrapper'>
             <h1>Register</h1>
             <form className="form" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="form__field">
