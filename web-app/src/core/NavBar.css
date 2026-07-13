@@ -1,7 +1,36 @@
 .nav {
     display: flex;
     align-items: center;
+    gap: 1.5rem;
     margin-left: 1rem;
+}
+
+.nav__link {
+    position: relative;
+    font: 600 16px/1 'Space Grotesk', sans-serif;
+    letter-spacing: 0.01em;
+    color: #6b6862;
+    text-decoration: none;
+    padding-bottom: 0.35rem;
+    transition: color .12s;
+}
+
+.nav__link:hover {
+    color: #403d36;
+}
+
+.nav__link--active {
+    color: var(--accent);
+}
+
+.nav__link--active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--accent);
 }
 
 .app-header {

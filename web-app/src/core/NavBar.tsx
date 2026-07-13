@@ -9,8 +9,19 @@ export default function Navbar() {
         <header className='app-header'>
             <span className='logo'>pixel</span>
             <nav className="nav">
-                <NavLink to="/">Editor</NavLink>
-                <NavLink to="/gallery">Gallery</NavLink>
+                <NavLink
+                    to="/"
+                    end
+                    className={({ isActive }) => `nav__link${isActive ? ' nav__link--active' : ''}`}
+                >
+                    Editor
+                </NavLink>
+                <NavLink
+                    to="/gallery"
+                    className={({ isActive }) => `nav__link${isActive ? ' nav__link--active' : ''}`}
+                >
+                    Gallery
+                </NavLink>
             </nav>
             <div className='auth'>
                 {user === null ?
