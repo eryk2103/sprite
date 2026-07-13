@@ -6,7 +6,7 @@ import MainPanel, { type MainPanelHandle } from './MainPanel'
 import ProjectPanel from './ProjectPanel'
 import UnsavedChangesModal from './UnsavedChangesModal'
 import { type ProjectDetail } from './project'
-import { type Sprite } from './sprite'
+import { type Sprite, getSpriteSize } from './sprite'
 
 type LocationState = {
   project?: ProjectDetail;
@@ -16,7 +16,7 @@ type LocationState = {
 function App() {
   const location = useLocation();
   const openState = location.state as LocationState;
-  const [size, setSize] = useState(16);
+  const [size, setSize] = useState(() => openState?.sprite ? getSpriteSize(openState.sprite.data, 16) : 16);
   const [color, setColor] = useState('#000000');
   const [tool, setTool] = useState('pencil');
   const [project, setProject] = useState<ProjectDetail|null>(openState?.project ?? null);
@@ -25,11 +25,16 @@ function App() {
   const [confirmSaving, setConfirmSaving] = useState(false);
   const mainPanelRef = useRef<MainPanelHandle>(null);
 
+  const selectSprite = (newSprite: Sprite) => {
+    setSprite(newSprite);
+    setSize(getSpriteSize(newSprite.data, size));
+  };
+
   const handleSpriteSelect = (newSprite: Sprite) => {
     if (mainPanelRef.current?.isDirty()) {
       setPendingSprite(newSprite);
     } else {
-      setSprite(newSprite);
+      selectSprite(newSprite);
     }
   };
 
@@ -37,12 +42,12 @@ function App() {
     setConfirmSaving(true);
     const ok = await mainPanelRef.current?.save();
     setConfirmSaving(false);
-    if (ok && pendingSprite) setSprite(pendingSprite);
+    if (ok && pendingSprite) selectSprite(pendingSprite);
     setPendingSprite(null);
   };
 
   const handleConfirmDiscard = () => {
-    if (pendingSprite) setSprite(pendingSprite);
+    if (pendingSprite) selectSprite(pendingSprite);
     setPendingSprite(null);
   };
 
