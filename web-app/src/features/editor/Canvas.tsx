@@ -12,6 +12,7 @@ interface CanvasProps {
 
 export interface CanvasHandle {
     getData: () => string;
+    isDirty: () => boolean;
 }
 
 function parsePixels(data: string | undefined, size: number): string[][] | null {
@@ -31,9 +32,11 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const pixels = useRef<string[][]>([]);
     const isDrawing = useRef(false);
+    const dirty = useRef(false);
 
     useImperativeHandle(ref, () => ({
         getData: () => JSON.stringify(pixels.current),
+        isDirty: () => dirty.current,
     }));
 
     const drawCanvas = useCallback(() => {
@@ -101,6 +104,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
             if (row < 0 || row >= size || col < 0 || col >= size) return;
             pixels.current[row][col] = tool === 'eraser' ? '' : color;
         }
+        dirty.current = true;
         drawCanvas();
     }, [color, tool, size, getCell, drawCanvas]);
 
@@ -109,6 +113,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
         const [row, col] = getCell(e);
         if (row < 0 || row >= size || col < 0 || col >= size) return;
         pixels.current[row][col] = tool === 'eraser' ? '' : color;
+        dirty.current = true;
         drawCanvas();
     }, [color, tool, size, getCell, drawCanvas]);
 

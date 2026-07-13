@@ -18,6 +18,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
+    position: relative;
 }
 
 .group__items {
@@ -51,4 +52,22 @@
 .project-panel__change-btn {
     margin-top: auto;
     align-self: flex-end;
+}
+
+.menu {
+    position: absolute;
+    top: 32px;
+    right: 0;
+    background-color: #e0dcd2;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    clip-path: polygon(
+        0 10px, 10px 0,
+        calc(100% - 10px) 0, 100% 10px,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        10px 100%, 0 calc(100% - 10px)
+    );
+    z-index: 1000;
 }

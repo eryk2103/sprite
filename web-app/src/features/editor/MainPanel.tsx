@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../auth/authStore';
 import Canvas, { type CanvasHandle } from './Canvas';
@@ -12,20 +12,25 @@ interface MainPanelProps {
     sprite: Sprite | null;
 }
 
-export default function MainPanel({ size, color, tool, sprite }: MainPanelProps) {
+export interface MainPanelHandle {
+    isDirty: () => boolean;
+    save: () => Promise<boolean>;
+}
+
+const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel({ size, color, tool, sprite }, ref) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const canvasRef = useRef<CanvasHandle>(null);
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
 
-    const handleSave = async () => {
+    const save = async (): Promise<boolean> => {
         if (!user) {
             navigate('/login');
-            return;
+            return false;
         }
 
-        if (!sprite) return;
+        if (!sprite) return false;
 
         setSaving(true);
         setSaveError('');
@@ -41,12 +46,19 @@ export default function MainPanel({ size, color, tool, sprite }: MainPanelProps)
             });
 
             if (!res.ok) throw new Error('Failed to save sprite');
+            return true;
         } catch {
             setSaveError('Failed to save sprite');
+            return false;
         } finally {
             setSaving(false);
         }
     };
+
+    useImperativeHandle(ref, () => ({
+        isDirty: () => canvasRef.current?.isDirty() ?? false,
+        save,
+    }));
 
     return (
         <div className="main-panel">
@@ -54,7 +66,7 @@ export default function MainPanel({ size, color, tool, sprite }: MainPanelProps)
                 <>
                     <div className='sprite__header'>
                         <span className="label sprite__name">{sprite.name}</span>
-                        <button className='btn btn--primary' onClick={handleSave} disabled={saving}>
+                        <button className='btn btn--primary' onClick={() => save()} disabled={saving}>
                             {saving ? 'Saving…' : 'Save'}
                         </button>
                     </div>
@@ -68,4 +80,6 @@ export default function MainPanel({ size, color, tool, sprite }: MainPanelProps)
             )}
         </div>
     );
-}
+});
+
+export default MainPanel;
