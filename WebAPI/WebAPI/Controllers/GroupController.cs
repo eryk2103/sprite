@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ModelBinding;
 using WebAPI.Models;
 using WebAPI.Services;
 
@@ -12,14 +12,8 @@ namespace WebAPI.Controllers;
 public class GroupController(IGroupService groupService): ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<GroupDto>> CreateGroup(CreateGroupDto dto)
+    public async Task<ActionResult<GroupDto>> CreateGroup(CreateGroupDto dto, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var group = await groupService.CreateAsync(userId, dto);
         if (group == null)
         {
@@ -30,14 +24,8 @@ public class GroupController(IGroupService groupService): ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<GroupDto>> UpdateGroup(int id, UpdateGroupDto dto)
+    public async Task<ActionResult<GroupDto>> UpdateGroup(int id, UpdateGroupDto dto, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var group = await groupService.UpdateAsync(id, userId, dto);
         if (group == null)
         {
@@ -48,14 +36,8 @@ public class GroupController(IGroupService groupService): ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteGroup(int id)
+    public async Task<IActionResult> DeleteGroup(int id, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var deleted = await groupService.DeleteAsync(id, userId);
         if (!deleted)
         {

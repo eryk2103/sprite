@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Data;
 using WebAPI.Data.Repositories;
+using WebAPI.ModelBinding;
 using WebAPI.Models;
 using WebAPI.Services;
 
@@ -44,6 +45,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+//Check if [CurrentUserId] attribute is used within [Authorize] attribute.
+CurrentUserIdValidator.ValidateUsage(typeof(Program).Assembly);
 
 if (app.Environment.IsDevelopment())
 {

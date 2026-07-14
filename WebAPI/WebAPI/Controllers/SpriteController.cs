@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ModelBinding;
 using WebAPI.Models;
 using WebAPI.Services;
 
@@ -12,14 +12,8 @@ namespace WebAPI.Controllers;
 public class SpriteController(ISpriteService spriteService) : ControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<SpriteDetailDto>> GetSprite(int id)
+    public async Task<ActionResult<SpriteDetailDto>> GetSprite(int id, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var sprite = await spriteService.GetByIdAsync(id, userId);
         if (sprite == null)
         {
@@ -30,14 +24,8 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<SpriteDto>> CreateSprite(CreateSpriteDto dto)
+    public async Task<ActionResult<SpriteDto>> CreateSprite(CreateSpriteDto dto, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var sprite = await spriteService.CreateAsync(userId, dto);
         if (sprite == null)
         {
@@ -48,14 +36,8 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<SpriteDto>> UpdateSprite(int id, UpdateSpriteDto dto)
+    public async Task<ActionResult<SpriteDto>> UpdateSprite(int id, UpdateSpriteDto dto, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var sprite = await spriteService.UpdateAsync(id, userId, dto);
         if (sprite == null)
         {
@@ -66,14 +48,8 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
     }
 
     [HttpPut("{id}/rename")]
-    public async Task<ActionResult<SpriteDto>> RenameSprite(int id, RenameSpriteDto dto)
+    public async Task<ActionResult<SpriteDto>> RenameSprite(int id, RenameSpriteDto dto, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var sprite = await spriteService.RenameAsync(id, userId, dto);
         if (sprite == null)
         {
@@ -84,14 +60,8 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSprite(int id)
+    public async Task<IActionResult> DeleteSprite(int id, [CurrentUserId] string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
         var deleted = await spriteService.DeleteAsync(id, userId);
         if (!deleted)
         {
