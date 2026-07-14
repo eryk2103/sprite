@@ -11,7 +11,6 @@
     letter-spacing: 0.01em;
     color: var(--color-text-muted);
     text-decoration: none;
-    padding-bottom: 0.35rem;
     transition: color .12s;
 }
 
@@ -28,7 +27,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: -0.35rem;
     height: 2px;
     background: var(--accent);
 }
