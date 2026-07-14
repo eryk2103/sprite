@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.ModelBinding;
 using WebAPI.Models;
 using WebAPI.Services;
@@ -26,13 +27,20 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<SpriteDto>> CreateSprite(CreateSpriteDto dto, [CurrentUserId] string userId)
     {
-        var sprite = await spriteService.CreateAsync(userId, dto);
-        if (sprite == null)
+        try
         {
-            return NotFound();
-        }
+            var sprite = await spriteService.CreateAsync(userId, dto);
+            if (sprite == null)
+            {
+                return NotFound();
+            }
 
-        return Ok(sprite);
+            return Ok(sprite);
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("A sprite with this name already exists.");
+        }
     }
 
     [HttpPut("{id}")]
@@ -50,13 +58,20 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
     [HttpPut("{id}/rename")]
     public async Task<ActionResult<SpriteDto>> RenameSprite(int id, RenameSpriteDto dto, [CurrentUserId] string userId)
     {
-        var sprite = await spriteService.RenameAsync(id, userId, dto);
-        if (sprite == null)
+        try
         {
-            return NotFound();
-        }
+            var sprite = await spriteService.RenameAsync(id, userId, dto);
+            if (sprite == null)
+            {
+                return NotFound();
+            }
 
-        return Ok(sprite);
+            return Ok(sprite);
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("A sprite with this name already exists.");
+        }
     }
 
     [HttpDelete("{id}")]

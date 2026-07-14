@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.ModelBinding;
 using WebAPI.Models;
 using WebAPI.Services;
@@ -32,19 +33,33 @@ public class ProjectController(IProjectService projectService): ControllerBase
     [HttpPost]
     public async Task<ActionResult<ProjectDto>> CreateProject(CreateProjectDto dto, [CurrentUserId] string userId)
     {
-        return Ok(await projectService.CreateAsync(userId, dto));
+        try
+        {
+            return Ok(await projectService.CreateAsync(userId, dto));
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("A project with this name already exists.");
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<ProjectDto>> UpdateProject(int id, UpdateProjectDto dto, [CurrentUserId] string userId)
     {
-        var project = await projectService.UpdateAsync(id, userId, dto);
-        if (project == null)
+        try
         {
-            return NotFound();
-        }
+            var project = await projectService.UpdateAsync(id, userId, dto);
+            if (project == null)
+            {
+                return NotFound();
+            }
 
-        return Ok(project);
+            return Ok(project);
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("A project with this name already exists.");
+        }
     }
 
     [HttpDelete("{id}")]
