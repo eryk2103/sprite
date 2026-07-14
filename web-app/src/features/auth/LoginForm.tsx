@@ -19,12 +19,22 @@ export default function LoginForm() {
     const [demoLoading, setDemoLoading] = useState(false);
     const navigate = useNavigate();
 
+    const getUnauthorizedMessage = async (res: Response, fallback: string) => {
+        const problem = await res.json().catch(() => null) as { detail?: string } | null;
+
+        if (problem?.detail === "LockedOut") {
+            return "Too many failed attempts. Your account is temporarily locked — please try again in a few minutes.";
+        }
+
+        return fallback;
+    };
+
     const onSubmit = async (values: LoginFormValues) => {
         try{
             const res = await login(values.email, values.password);
             if(!res.ok) {
                 if(res.status === 401) {
-                    setError("Invalid credentials")
+                    setError(await getUnauthorizedMessage(res, "Invalid credentials"))
                 }
                 else{
                     setError("Something went wrong");
@@ -45,7 +55,7 @@ export default function LoginForm() {
         try {
             const res = await login(import.meta.env.VITE_DEMO_EMAIL, import.meta.env.VITE_DEMO_PASSWORD);
             if (!res.ok) {
-                setError("Demo login failed");
+                setError(res.status === 401 ? await getUnauthorizedMessage(res, "Demo login failed") : "Demo login failed");
                 return;
             }
             await getMe();
