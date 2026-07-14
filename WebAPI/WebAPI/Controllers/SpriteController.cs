@@ -1,16 +1,15 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebAPI.Data;
 using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/sprites")]
-public class SpriteController(AppDbContext context) : ControllerBase
+public class SpriteController(ISpriteService spriteService) : ControllerBase
 {
     [HttpGet("{id}")]
     public async Task<ActionResult<SpriteDetailDto>> GetSprite(int id)
@@ -21,16 +20,7 @@ public class SpriteController(AppDbContext context) : ControllerBase
             return Unauthorized();
         }
 
-        var sprite = await context.Sprites
-            .Where(s => s.Id == id && s.Group.Project.UserId == userId)
-            .Select(s => new SpriteDetailDto
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Data = s.Data
-            })
-            .FirstOrDefaultAsync();
-
+        var sprite = await spriteService.GetByIdAsync(id, userId);
         if (sprite == null)
         {
             return NotFound();
@@ -48,25 +38,13 @@ public class SpriteController(AppDbContext context) : ControllerBase
             return Unauthorized();
         }
 
-        var groupExists = await context.Groups
-            .AnyAsync(g => g.Id == dto.GroupId && g.Project.UserId == userId);
-
-        if (!groupExists)
+        var sprite = await spriteService.CreateAsync(userId, dto);
+        if (sprite == null)
         {
             return NotFound();
         }
 
-        var newSprite = new Sprite()
-        {
-            Name = dto.Name,
-            Data = dto.Data,
-            GroupId = dto.GroupId
-        };
-
-        context.Add(newSprite);
-        await context.SaveChangesAsync();
-
-        return Ok(new SpriteDto { Id = newSprite.Id, Name = newSprite.Name });
+        return Ok(sprite);
     }
 
     [HttpPut("{id}")]
@@ -78,18 +56,13 @@ public class SpriteController(AppDbContext context) : ControllerBase
             return Unauthorized();
         }
 
-        var sprite = await context.Sprites
-            .FirstOrDefaultAsync(s => s.Id == id && s.Group.Project.UserId == userId);
-
+        var sprite = await spriteService.UpdateAsync(id, userId, dto);
         if (sprite == null)
         {
             return NotFound();
         }
 
-        sprite.Data = dto.Data;
-        await context.SaveChangesAsync();
-
-        return Ok(new SpriteDto { Id = sprite.Id, Name = sprite.Name });
+        return Ok(sprite);
     }
 
     [HttpPut("{id}/rename")]
@@ -101,18 +74,13 @@ public class SpriteController(AppDbContext context) : ControllerBase
             return Unauthorized();
         }
 
-        var sprite = await context.Sprites
-            .FirstOrDefaultAsync(s => s.Id == id && s.Group.Project.UserId == userId);
-
+        var sprite = await spriteService.RenameAsync(id, userId, dto);
         if (sprite == null)
         {
             return NotFound();
         }
 
-        sprite.Name = dto.Name;
-        await context.SaveChangesAsync();
-
-        return Ok(new SpriteDto { Id = sprite.Id, Name = sprite.Name });
+        return Ok(sprite);
     }
 
     [HttpDelete("{id}")]
@@ -124,16 +92,11 @@ public class SpriteController(AppDbContext context) : ControllerBase
             return Unauthorized();
         }
 
-        var sprite = await context.Sprites
-            .FirstOrDefaultAsync(s => s.Id == id && s.Group.Project.UserId == userId);
-
-        if (sprite == null)
+        var deleted = await spriteService.DeleteAsync(id, userId);
+        if (!deleted)
         {
             return NotFound();
         }
-
-        context.Remove(sprite);
-        await context.SaveChangesAsync();
 
         return NoContent();
     }

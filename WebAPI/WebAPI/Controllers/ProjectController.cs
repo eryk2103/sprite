@@ -1,16 +1,15 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebAPI.Data;
 using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/projects")]
-public class ProjectController(AppDbContext context): ControllerBase
+public class ProjectController(IProjectService projectService): ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProjectDto>>> GetAllProjects()
@@ -21,16 +20,7 @@ public class ProjectController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var projects = await context.Projects
-            .Where(p => p.UserId == userId)
-            .Select(p => new ProjectDto
-            {
-                Id = p.Id,
-                Name = p.Name
-            })
-            .ToListAsync();
-
-        return Ok(projects);
+        return Ok(await projectService.GetAllAsync(userId));
     }
 
     [HttpGet("{id}")]
@@ -42,28 +32,10 @@ public class ProjectController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var project = await context.Projects
-            .Where(p => p.UserId == userId && p.Id == id)
-            .Select(p => new ProjectDetailDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Groups = p.Groups.Select(g => new GroupDto
-                {
-                    Id = g.Id,
-                    Name = g.Name,
-                    Sprites = g.Sprites.Select(s => new SpriteDto
-                    {
-                        Id = s.Id,
-                        Name = s.Name
-                    }).ToList()
-                }).ToList()
-            })
-            .FirstOrDefaultAsync();
-
+        var project = await projectService.GetByIdAsync(id, userId);
         if (project == null)
         {
-            return NotFound(); 
+            return NotFound();
         }
 
         return Ok(project);
@@ -78,16 +50,7 @@ public class ProjectController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var newProject = new Project()
-        {
-            UserId = userId,
-            Name = dto.Name
-        };
-
-        context.Add(newProject);
-        await context.SaveChangesAsync();
-
-        return Ok(new ProjectDto { Id = newProject.Id, Name = newProject.Name });
+        return Ok(await projectService.CreateAsync(userId, dto));
     }
 
     [HttpPut("{id}")]
@@ -99,18 +62,13 @@ public class ProjectController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var project = await context.Projects
-            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
-
+        var project = await projectService.UpdateAsync(id, userId, dto);
         if (project == null)
         {
             return NotFound();
         }
 
-        project.Name = dto.Name;
-        await context.SaveChangesAsync();
-
-        return Ok(new ProjectDto { Id = project.Id, Name = project.Name });
+        return Ok(project);
     }
 
     [HttpDelete("{id}")]
@@ -122,16 +80,11 @@ public class ProjectController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var project = await context.Projects
-            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
-
-        if (project == null)
+        var deleted = await projectService.DeleteAsync(id, userId);
+        if (!deleted)
         {
             return NotFound();
         }
-
-        context.Remove(project);
-        await context.SaveChangesAsync();
 
         return NoContent();
     }

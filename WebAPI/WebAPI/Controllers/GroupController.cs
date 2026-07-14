@@ -1,16 +1,15 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebAPI.Data;
 using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/groups")]
-public class GroupController(AppDbContext context): ControllerBase
+public class GroupController(IGroupService groupService): ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<GroupDto>> CreateGroup(CreateGroupDto dto)
@@ -21,24 +20,13 @@ public class GroupController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var projectExists = await context.Projects
-            .AnyAsync(p => p.Id == dto.ProjectId && p.UserId == userId);
-
-        if (!projectExists)
+        var group = await groupService.CreateAsync(userId, dto);
+        if (group == null)
         {
             return NotFound();
         }
 
-        var newGroup = new Group()
-        {
-            Name = dto.Name,
-            ProjectId = dto.ProjectId
-        };
-
-        context.Add(newGroup);
-        await context.SaveChangesAsync();
-
-        return Ok(new GroupDto { Id = newGroup.Id, Name = newGroup.Name, Sprites = [] });
+        return Ok(group);
     }
 
     [HttpPut("{id}")]
@@ -50,24 +38,13 @@ public class GroupController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var group = await context.Groups
-            .Include(g => g.Sprites)
-            .FirstOrDefaultAsync(g => g.Id == id && g.Project.UserId == userId);
-
+        var group = await groupService.UpdateAsync(id, userId, dto);
         if (group == null)
         {
             return NotFound();
         }
 
-        group.Name = dto.Name;
-        await context.SaveChangesAsync();
-
-        return Ok(new GroupDto
-        {
-            Id = group.Id,
-            Name = group.Name,
-            Sprites = group.Sprites.Select(s => new SpriteDto { Id = s.Id, Name = s.Name }).ToList()
-        });
+        return Ok(group);
     }
 
     [HttpDelete("{id}")]
@@ -79,16 +56,11 @@ public class GroupController(AppDbContext context): ControllerBase
             return Unauthorized();
         }
 
-        var group = await context.Groups
-            .FirstOrDefaultAsync(g => g.Id == id && g.Project.UserId == userId);
-
-        if (group == null)
+        var deleted = await groupService.DeleteAsync(id, userId);
+        if (!deleted)
         {
             return NotFound();
         }
-
-        context.Remove(group);
-        await context.SaveChangesAsync();
 
         return NoContent();
     }
