@@ -5,11 +5,21 @@ namespace WebAPI.Data.Repositories;
 
 public class ProjectRepository(AppDbContext context) : IProjectRepository
 {
-    public Task<List<Project>> GetAllForUserAsync(string userId) =>
-        context.Projects
+    public async Task<(List<Project> Items, int TotalCount)> GetPagedForUserAsync(string userId, int page, int pageSize)
+    {
+        var query = context.Projects
             .AsNoTracking()
-            .Where(p => p.UserId == userId)
+            .Where(p => p.UserId == userId);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .OrderBy(p => p.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return (items, totalCount);
+    }
 
     public Task<Project?> GetDetailForUserAsync(int id, string userId) =>
         context.Projects

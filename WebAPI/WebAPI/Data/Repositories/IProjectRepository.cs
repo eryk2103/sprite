@@ -4,7 +4,7 @@ namespace WebAPI.Data.Repositories;
 
 public interface IProjectRepository
 {
-    Task<List<Project>> GetAllForUserAsync(string userId);
+    Task<(List<Project> Items, int TotalCount)> GetPagedForUserAsync(string userId, int page, int pageSize);
     Task<Project?> GetDetailForUserAsync(int id, string userId);
     Task<Project?> GetForUserAsync(int id, string userId);
     Task<bool> ExistsForUserAsync(int id, string userId);

@@ -1,8 +1,10 @@
 import { apiClient } from './client';
 import type { Project, ProjectDetail } from '../types/project';
+import type { PagedResult } from '../types/pagination';
 
-export function getProjects(): Promise<Project[]> {
-    return apiClient.get<Project[]>('/api/projects');
+export async function getProjects(): Promise<Project[]> {
+    const result = await apiClient.get<PagedResult<Project>>('/api/projects?pageSize=100');
+    return result.items;
 }
 
 export function getProject(id: number | string): Promise<ProjectDetail> {

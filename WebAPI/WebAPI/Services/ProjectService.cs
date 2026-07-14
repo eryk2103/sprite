@@ -7,10 +7,17 @@ namespace WebAPI.Services;
 
 public class ProjectService(IProjectRepository projectRepository, IPersistenceContext persistenceContext) : IProjectService
 {
-    public async Task<List<ProjectDto>> GetAllAsync(string userId)
+    public async Task<PagedResult<ProjectDto>> GetAllAsync(string userId, int page, int pageSize)
     {
-        var projects = await projectRepository.GetAllForUserAsync(userId);
-        return projects.Select(p => p.ToDto()).ToList();
+        var (projects, totalCount) = await projectRepository.GetPagedForUserAsync(userId, page, pageSize);
+
+        return new PagedResult<ProjectDto>
+        {
+            Items = projects.Select(p => p.ToDto()).ToList(),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<ProjectDetailDto?> GetByIdAsync(int id, string userId)

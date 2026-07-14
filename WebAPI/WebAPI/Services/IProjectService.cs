@@ -4,7 +4,7 @@ namespace WebAPI.Services;
 
 public interface IProjectService
 {
-    Task<List<ProjectDto>> GetAllAsync(string userId);
+    Task<PagedResult<ProjectDto>> GetAllAsync(string userId, int page, int pageSize);
     Task<ProjectDetailDto?> GetByIdAsync(int id, string userId);
     Task<ProjectDto> CreateAsync(string userId, CreateProjectDto dto);
     Task<ProjectDto?> UpdateAsync(int id, string userId, UpdateProjectDto dto);

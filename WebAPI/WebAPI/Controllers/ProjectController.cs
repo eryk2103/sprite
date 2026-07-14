@@ -13,9 +13,15 @@ namespace WebAPI.Controllers;
 public class ProjectController(IProjectService projectService, ILogger<ProjectController> logger): ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProjectDto>>> GetAllProjects([CurrentUserId] string userId)
+    public async Task<ActionResult<PagedResult<ProjectDto>>> GetAllProjects(
+        [CurrentUserId] string userId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        return Ok(await projectService.GetAllAsync(userId));
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        return Ok(await projectService.GetAllAsync(userId, page, pageSize));
     }
 
     [HttpGet("{id}")]
