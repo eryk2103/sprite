@@ -12,12 +12,6 @@ namespace WebAPI.Controllers;
 [Route("api/groups")]
 public class GroupController(AppDbContext context): ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> Get()
-    {
-        return Ok(await context.Groups.ToListAsync());
-    }
-
     [HttpPost]
     public async Task<ActionResult<GroupDto>> CreateGroup(CreateGroupDto dto)
     {

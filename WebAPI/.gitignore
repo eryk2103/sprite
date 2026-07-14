@@ -1,0 +1,7 @@
+## .NET build artifacts
+bin/
+obj/
+
+## User-specific / rider & vs files
+*.user
+*.suo
