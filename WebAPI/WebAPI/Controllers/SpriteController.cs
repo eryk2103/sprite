@@ -10,7 +10,7 @@ namespace WebAPI.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/sprites")]
-public class SpriteController(ISpriteService spriteService) : ControllerBase
+public class SpriteController(ISpriteService spriteService, ILogger<SpriteController> logger) : ControllerBase
 {
     [HttpGet("{id}")]
     public async Task<ActionResult<SpriteDetailDto>> GetSprite(int id, [CurrentUserId] string userId)
@@ -37,8 +37,9 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
 
             return Ok(sprite);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
+            logger.LogWarning(ex, "Conflict creating sprite {SpriteName} in group {GroupId} for user {UserId}", dto.Name, dto.GroupId, userId);
             return Conflict("A sprite with this name already exists.");
         }
     }
@@ -68,8 +69,9 @@ public class SpriteController(ISpriteService spriteService) : ControllerBase
 
             return Ok(sprite);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
+            logger.LogWarning(ex, "Conflict renaming sprite {SpriteId} to {SpriteName} for user {UserId}", id, dto.Name, userId);
             return Conflict("A sprite with this name already exists.");
         }
     }

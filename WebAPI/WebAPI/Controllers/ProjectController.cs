@@ -10,7 +10,7 @@ namespace WebAPI.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/projects")]
-public class ProjectController(IProjectService projectService): ControllerBase
+public class ProjectController(IProjectService projectService, ILogger<ProjectController> logger): ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProjectDto>>> GetAllProjects([CurrentUserId] string userId)
@@ -37,8 +37,9 @@ public class ProjectController(IProjectService projectService): ControllerBase
         {
             return Ok(await projectService.CreateAsync(userId, dto));
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
+            logger.LogWarning(ex, "Conflict creating project {ProjectName} for user {UserId}", dto.Name, userId);
             return Conflict("A project with this name already exists.");
         }
     }
@@ -56,8 +57,9 @@ public class ProjectController(IProjectService projectService): ControllerBase
 
             return Ok(project);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
+            logger.LogWarning(ex, "Conflict renaming project {ProjectId} to {ProjectName} for user {UserId}", id, dto.Name, userId);
             return Conflict("A project with this name already exists.");
         }
     }

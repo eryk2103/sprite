@@ -10,7 +10,7 @@ namespace WebAPI.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/groups")]
-public class GroupController(IGroupService groupService): ControllerBase
+public class GroupController(IGroupService groupService, ILogger<GroupController> logger): ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<GroupDto>> CreateGroup(CreateGroupDto dto, [CurrentUserId] string userId)
@@ -25,8 +25,9 @@ public class GroupController(IGroupService groupService): ControllerBase
 
             return Ok(group);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
+            logger.LogWarning(ex, "Conflict creating group {GroupName} in project {ProjectId} for user {UserId}", dto.Name, dto.ProjectId, userId);
             return Conflict("A group with this name already exists.");
         }
     }
@@ -44,8 +45,9 @@ public class GroupController(IGroupService groupService): ControllerBase
 
             return Ok(group);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
+            logger.LogWarning(ex, "Conflict renaming group {GroupId} to {GroupName} for user {UserId}", id, dto.Name, userId);
             return Conflict("A group with this name already exists.");
         }
     }
