@@ -1,0 +1,51 @@
+name: WebAPI CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'WebAPI/**'
+      - '.github/workflows/webapi-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'WebAPI/**'
+      - '.github/workflows/webapi-ci.yml'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore WebAPI/WebAPI.sln
+
+      - name: Build
+        run: dotnet build WebAPI/WebAPI.sln --no-restore -c Release
+
+      - name: Check for vulnerable packages
+        run: |
+          output=$(dotnet list WebAPI/WebAPI/WebAPI.csproj package --vulnerable --include-transitive)
+          echo "$output"
+          if echo "$output" | grep -q "has the following vulnerable packages"; then
+            echo "::error::Vulnerable NuGet packages detected"
+            exit 1
+          fi
+
+      - name: Test
+        run: dotnet test WebAPI/WebAPI.sln --no-build -c Release --logger "trx;LogFileName=test-results.trx"
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/test-results.trx'

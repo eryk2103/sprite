@@ -1,6 +1,7 @@
 ## .NET build artifacts
 bin/
 obj/
+TestResults/
 
 ## User-specific / rider & vs files
 *.user
