@@ -1,48 +1,52 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
 import { type User } from './user';
+import { apiClient, setAccessToken } from '../../api/client';
+
+interface AccessTokenResponse {
+    accessToken: string;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [, setAccessTokenState] = useState<string | null>(null);
+
+    const applyAccessToken = (token: string | null) => {
+        setAccessTokenState(token);
+        setAccessToken(token);
+    };
 
     const login = async (email: string, password: string) => {
-        return await fetch(`${import.meta.env.VITE_API_URL}/login?useCookies=true`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
             body: JSON.stringify({ email, password }),
         });
+
+        if (res.ok) {
+            const { accessToken } = await res.clone().json() as AccessTokenResponse;
+            applyAccessToken(accessToken);
+        }
+
+        return res;
     };
 
     const register = async (email: string, password: string) => {
         return await fetch(`${import.meta.env.VITE_API_URL}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
             body: JSON.stringify({ email, password }),
         });
     };
 
     const getMe = async () => {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/manage/info`, {
-            method: 'GET',
-            credentials: 'include',
-        });
-
-        if (!res.ok) {
-            throw new Error('getMe request error');
-        }
-
-        const data = await res.json();
-        setUser(data);
+        setUser(await apiClient.get<User>('/manage/info'));
     };
 
     const logout = async () => {
-        await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
-            method: 'POST',
-            credentials: 'include',
-        });
+        await apiClient.post('/logout').catch(() => undefined);
+        applyAccessToken(null);
         setUser(null);
     };
 
