@@ -7,7 +7,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
 
     const login = async (email: string, password: string) => {
-        return await fetch(`${import.meta.env.VITE_API_URL}/login?useCookies=true`, {
+        return await fetch(`${import.meta.env.VITE_API_URL}/api/login?useCookies=true`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -16,7 +16,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const register = async (email: string, password: string) => {
-        return await fetch(`${import.meta.env.VITE_API_URL}/register`, {
+        return await fetch(`${import.meta.env.VITE_API_URL}/api/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const getMe = async () => {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/manage/info`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/manage/info`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = async () => {
-        await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/logout`, {
             method: 'POST',
             credentials: 'include',
         });

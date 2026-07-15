@@ -13,10 +13,10 @@ public abstract class IntegrationTestBase(WebApiFactory factory)
         var email = $"user-{Guid.NewGuid():N}@example.com";
         const string password = "Test1234!";
 
-        var registerResponse = await client.PostAsJsonAsync("/register", new { email, password });
+        var registerResponse = await client.PostAsJsonAsync("/api/register", new { email, password });
         registerResponse.EnsureSuccessStatusCode();
 
-        var loginResponse = await client.PostAsJsonAsync("/login?useCookies=true", new { email, password });
+        var loginResponse = await client.PostAsJsonAsync("/api/login?useCookies=true", new { email, password });
         loginResponse.EnsureSuccessStatusCode();
 
         return client;

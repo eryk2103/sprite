@@ -90,9 +90,11 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapIdentityApi<User>();
+var api = app.MapGroup("/api");
 
-app.MapPost("/logout", async (SignInManager<User> signInManager) =>
+api.MapIdentityApi<User>();
+
+api.MapPost("/logout", async (SignInManager<User> signInManager) =>
 {
     await signInManager.SignOutAsync();
     return Results.Ok();
