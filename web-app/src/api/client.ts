@@ -1,5 +1,11 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
+let accessToken: string | null = null;
+
+export function setAccessToken(token: string | null): void {
+    accessToken = token;
+}
+
 export class ApiError extends Error {
     status: number;
 
@@ -11,10 +17,14 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+    const headers = options.body ? { 'Content-Type': 'application/json', ...options.headers } : { ...options.headers };
+    if (accessToken) {
+        (headers as Record<string, string>)['Authorization'] = `Bearer ${accessToken}`;
+    }
+
     const res = await fetch(`${BASE_URL}${path}`, {
-        credentials: 'include',
         ...options,
-        headers: options.body ? { 'Content-Type': 'application/json', ...options.headers } : options.headers,
+        headers,
     });
 
     if (!res.ok) {
