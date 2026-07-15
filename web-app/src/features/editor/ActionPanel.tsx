@@ -6,19 +6,20 @@ import ToolPicker from './ToolPicker';
 interface ActionPanelProps {
     color: string;
     onColorChange: (color: string) => void;
+    recentColors: string[];
     tool: string;
     onToolChange: (tool: string) => void;
     size: number;
     onSizeChange: (size: number) => void;
 }
 
-export default function ActionPanel({ color, onColorChange, tool, onToolChange, size, onSizeChange }: ActionPanelProps) {
+export default function ActionPanel({ color, onColorChange, recentColors, tool, onToolChange, size, onSizeChange }: ActionPanelProps) {
     return(
         <div className={styles['action-panel']}>
             <h3 className="label">Tool panel</h3>
             <section className={styles.section}>
                 <h4 className={`label ${styles['section__title']}`}>Color</h4>
-                <ColorPicker color={color} onColorChange={onColorChange}/>
+                <ColorPicker color={color} onColorChange={onColorChange} recentColors={recentColors}/>
             </section>
             <section className={styles.section}>
                 <h4 className={`label ${styles['section__title']}`}>Tools</h4>

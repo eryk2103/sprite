@@ -19,12 +19,17 @@ function App() {
   const openState = location.state as LocationState;
   const [size, setSize] = useState(() => openState?.sprite ? getSpriteSize(openState.sprite.data, 16) : 16);
   const [color, setColor] = useState('#000000');
+  const [recentColors, setRecentColors] = useState<string[]>([]);
   const [tool, setTool] = useState('pencil');
   const [project, setProject] = useState<ProjectDetail|null>(openState?.project ?? null);
   const [sprite, setSprite] = useState<Sprite|null>(openState?.sprite ?? null);
   const [pendingSprite, setPendingSprite] = useState<Sprite|null>(null);
   const [confirmSaving, setConfirmSaving] = useState(false);
   const mainPanelRef = useRef<MainPanelHandle>(null);
+
+  const handleColorUse = (usedColor: string) => {
+    setRecentColors(prev => [usedColor, ...prev.filter(c => c !== usedColor)].slice(0, 10));
+  };
 
   const selectSprite = (newSprite: Sprite) => {
     setSprite(newSprite);
@@ -75,8 +80,9 @@ function App() {
           onSpriteRename={handleSpriteRename}
           onSpriteDelete={handleSpriteDelete}
           onColorPick={setColor}
+          onColorUse={handleColorUse}
         />
-        <ActionPanel color={color} onColorChange={setColor} tool={tool} onToolChange={setTool} size={size} onSizeChange={setSize}/>
+        <ActionPanel color={color} onColorChange={setColor} recentColors={recentColors} tool={tool} onToolChange={setTool} size={size} onSizeChange={setSize}/>
       </div>
       <UnsavedChangesModal
         isOpen={pendingSprite !== null}
