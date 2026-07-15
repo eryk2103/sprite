@@ -1,4 +1,4 @@
-const TOOLS = ['pencil', 'fill', 'eraser'] as const;
+const TOOLS = ['pencil', 'fill', 'eraser', 'dropper'] as const;
 
 interface ToolPickerProps {
     tool: string;

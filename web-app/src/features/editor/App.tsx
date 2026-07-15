@@ -74,6 +74,7 @@ function App() {
           sprite={sprite}
           onSpriteRename={handleSpriteRename}
           onSpriteDelete={handleSpriteDelete}
+          onColorPick={setColor}
         />
         <ActionPanel color={color} onColorChange={setColor} tool={tool} onToolChange={setTool} size={size} onSizeChange={setSize}/>
       </div>

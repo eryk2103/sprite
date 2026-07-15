@@ -10,6 +10,7 @@ interface CanvasProps {
     tool: string;
     data?: string;
     onDirtyChange?: (dirty: boolean) => void;
+    onColorPick?: (color: string) => void;
 }
 
 export interface CanvasHandle {
@@ -32,7 +33,7 @@ function parsePixels(data: string | undefined, size: number): string[][] | null 
     return null;
 }
 
-const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, color, tool, data, onDirtyChange }, ref) {
+const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, color, tool, data, onDirtyChange, onColorPick }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const pixels = useRef<string[][]>([]);
     const isDrawing = useRef(false);
@@ -97,8 +98,16 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
     }, [size]);
 
     const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-        isDrawing.current = true;
         const [row, col] = getCell(e);
+
+        if (tool === 'dropper') {
+            if (row < 0 || row >= size || col < 0 || col >= size) return;
+            const sampled = pixels.current[row][col];
+            if (sampled) onColorPick?.(sampled);
+            return;
+        }
+
+        isDrawing.current = true;
 
         if (tool === 'fill') {
             floodFill(pixels.current, row, col, color, size);
@@ -108,7 +117,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas({ size, col
         }
         setDirty(true);
         drawCanvas();
-    }, [color, tool, size, getCell, drawCanvas, setDirty]);
+    }, [color, tool, size, getCell, drawCanvas, setDirty, onColorPick]);
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!isDrawing.current || tool === 'fill') return;

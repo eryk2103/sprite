@@ -16,6 +16,7 @@ interface MainPanelProps {
     sprite: Sprite | null;
     onSpriteRename: (sprite: Sprite) => void;
     onSpriteDelete: (spriteId: number) => void;
+    onColorPick?: (color: string) => void;
 }
 
 export interface MainPanelHandle {
@@ -23,7 +24,7 @@ export interface MainPanelHandle {
     save: () => Promise<boolean>;
 }
 
-const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel({ size, color, tool, sprite, onSpriteRename, onSpriteDelete }, ref) {
+const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel({ size, color, tool, sprite, onSpriteRename, onSpriteDelete, onColorPick }, ref) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const canvasRef = useRef<CanvasHandle>(null);
@@ -118,7 +119,7 @@ const MainPanel = forwardRef<MainPanelHandle, MainPanelProps>(function MainPanel
                     {saveError && <span className="form__error">{saveError}</span>}
                     {deleteError && <span className="form__error">{deleteError}</span>}
                     <div className={styles.sprite}>
-                        <Canvas key={sprite.id} ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} onDirtyChange={setDirty} />
+                        <Canvas key={sprite.id} ref={canvasRef} size={size} color={color} tool={tool} data={sprite.data} onDirtyChange={setDirty} onColorPick={onColorPick} />
                     </div>
                     <EditSpriteModal
                         isOpen={editOpen}
